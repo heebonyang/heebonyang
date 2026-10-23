@@ -1,0 +1,23 @@
+# 양희본 · Heebon Yang
+
+싱어송라이터 · 치과의사
+
+이 저장소는 개인 홈페이지 소스입니다. 음악과 치과 진료를 각각의 탭으로 소개합니다.
+
+## 실행
+
+```bash
+npm ci
+npm run dev     # 개발 서버
+npm run build   # out/ 폴더에 정적 사이트 생성
+```
+
+내용 수정은 `app/ProfileTabs.tsx` 맨 위의 `MUSIC`, `DENTAL` 부분에서 합니다.
+
+## 배포 (Firebase Hosting)
+
+```bash
+npm run build
+npx firebase-tools login
+npx firebase-tools deploy --only hosting
+```
