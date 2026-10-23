@@ -12,7 +12,9 @@ npm run dev     # 개발 서버
 npm run build   # out/ 폴더에 정적 사이트 생성
 ```
 
-내용 수정은 `app/ProfileTabs.tsx` 맨 위의 `MUSIC`, `DENTAL` 부분에서 합니다.
+- 음악 탭(발매 음원, 소개, 연락처): `app/music.ts`
+- 앨범 커버 이미지: `public/covers/` 폴더
+- 치과 탭: `app/ProfileTabs.tsx` 맨 위의 `DENTAL`
 
 ## 배포 (Firebase Hosting)
 

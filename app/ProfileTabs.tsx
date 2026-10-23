@@ -1,31 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import MusicPanel from "./MusicPanel";
 
-// ── 여기 내용만 수정하면 페이지가 바뀝니다 ─────────────────────────
+// ── 치과 탭 내용 (음악 탭 내용은 app/music.ts) ──────────────────────
 // 음악과 치과는 서로 완전히 분리된 탭으로, 내용이 섞이지 않습니다.
 const NAME_EN = "Heebon Yang";
-
-const MUSIC = {
-  role: "싱어송라이터",
-  title: "양희본",
-  tagline: "일상의 이야기를 노래로 만듭니다.",
-  about:
-    "어쿠스틱 기타 한 대로 시작한 노래들입니다. 직접 쓰고, 직접 부르고, 가끔 작은 무대에 섭니다.",
-  songs: [
-    { title: "첫 번째 곡", year: "2025", note: "디지털 싱글" },
-    { title: "두 번째 곡", year: "2024", note: "EP 수록곡" },
-    { title: "세 번째 곡", year: "2023", note: "데뷔 싱글" },
-  ],
-  links: [
-    { label: "YouTube", href: "#" },
-    { label: "Melon", href: "#" },
-    { label: "Spotify", href: "#" },
-  ],
-  contact: [
-    { label: "Instagram", href: "#" },
-    { label: "Email", href: "mailto:music@example.com" },
-  ],
-};
 
 const DENTAL = {
   role: "치과의사",
@@ -48,8 +27,8 @@ const DENTAL = {
 type Tab = "music" | "dental";
 
 const THEME = {
-  music:  { tag: "bg-amber-100 text-amber-800", eyebrow: "text-amber-700", active: "bg-amber-700 text-white", btn: "border-amber-700 text-amber-800 hover:bg-amber-50" },
-  dental: { tag: "bg-sky-100 text-sky-800",     eyebrow: "text-sky-700",   active: "bg-sky-700 text-white",   btn: "border-sky-700 text-sky-800 hover:bg-sky-50" },
+  music:  { tag: "bg-amber-100 text-amber-800", eyebrow: "text-amber-700", active: "bg-amber-700 text-white" },
+  dental: { tag: "bg-sky-100 text-sky-800",     eyebrow: "text-sky-700",   active: "bg-sky-700 text-white" },
 };
 
 function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; title: string; tagline: string; about: string }) {
@@ -70,40 +49,6 @@ function Section({ tab, eyebrow, title, children }: { tab: Tab; eyebrow: string;
       <h2 className="mt-2 text-2xl font-bold text-stone-900">{title}</h2>
       <div className="mt-6">{children}</div>
     </section>
-  );
-}
-
-function LinkButtons({ tab, links }: { tab: Tab; links: { label: string; href: string }[] }) {
-  return (
-    <div className="flex flex-wrap gap-3">
-      {links.map((link) => (
-        <a key={link.label} href={link.href} className={`px-4 py-2 rounded-lg border bg-white text-sm ${THEME[tab].btn}`}>
-          {link.label}
-        </a>
-      ))}
-    </div>
-  );
-}
-
-function MusicPanel() {
-  return (
-    <>
-      <Hero tab="music" {...MUSIC} />
-      <Section tab="music" eyebrow="Songs" title="발표한 곡">
-        <ul className="divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
-          {MUSIC.songs.map((song) => (
-            <li key={song.title} className="flex flex-wrap items-center justify-between gap-x-4 px-5 py-4">
-              <span className="font-medium text-stone-900">{song.title}</span>
-              <span className="text-sm text-stone-500">{song.note} · {song.year}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-6"><LinkButtons tab="music" links={MUSIC.links} /></div>
-      </Section>
-      <Section tab="music" eyebrow="Contact" title="공연·협업 문의">
-        <LinkButtons tab="music" links={MUSIC.contact} />
-      </Section>
-    </>
   );
 }
 
@@ -143,6 +88,9 @@ export default function ProfileTabs() {
     if (window.location.hash === "#dental") setTab("dental");
   }, []);
 
+  // 음악 탭은 앨범 커버 그리드를 위해 더 넓게 씀
+  const width = tab === "music" ? "max-w-5xl" : "max-w-3xl";
+
   const select = (next: Tab) => {
     setTab(next);
     history.replaceState(null, "", `#${next}`);
@@ -152,7 +100,7 @@ export default function ProfileTabs() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-700">
       <header className="sticky top-0 z-10 bg-stone-50/90 backdrop-blur border-b border-stone-200">
-        <nav className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+        <nav className={`${width} mx-auto px-4 h-16 flex items-center justify-between`}>
           <span className="font-bold text-stone-900">{NAME_EN}</span>
           <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
             {(["music", "dental"] as const).map((t) => (
@@ -170,7 +118,7 @@ export default function ProfileTabs() {
         </nav>
       </header>
 
-      <main role="tabpanel" className="max-w-3xl mx-auto px-4">
+      <main role="tabpanel" className={`${width} mx-auto px-4`}>
         {tab === "music" ? <MusicPanel /> : <DentalPanel />}
       </main>
 
