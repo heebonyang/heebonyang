@@ -1,0 +1,36 @@
+rules_version = '2';
+
+// 누구나 음원·팀·방명록을 읽을 수 있고, 방명록 글은 누구나 남길 수 있음.
+// 음원·팀 수정과 방명록 글 삭제는 관리자 구글 계정만 가능.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == "gmlqhs@gmail.com"
+        && request.auth.token.email_verified == true;
+    }
+
+    match /releases/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /teams/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /guestbook/{id} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(["name", "message", "createdAt"])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 30
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 500
+        && request.resource.data.createdAt == request.time;
+      allow delete: if isAdmin();
+    }
+  }
+}

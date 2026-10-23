@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import MusicPanel from "./MusicPanel";
+import Guestbook from "./Guestbook";
 
 // ── 치과 탭 내용 (음악 탭 내용은 app/music.ts) ──────────────────────
 // 음악과 치과는 서로 완전히 분리된 탭으로, 내용이 섞이지 않습니다.
@@ -24,11 +25,14 @@ const DENTAL = {
 };
 // ────────────────────────────────────────────────────────────────
 
-type Tab = "music" | "dental";
+type Tab = "music" | "dental" | "guestbook";
+
+const TAB_LABELS: Record<Tab, string> = { music: "음악", dental: "치과", guestbook: "방명록" };
 
 const THEME = {
   music:  { tag: "bg-amber-100 text-amber-800", eyebrow: "text-amber-700", active: "bg-amber-700 text-white" },
   dental: { tag: "bg-sky-100 text-sky-800",     eyebrow: "text-sky-700",   active: "bg-sky-700 text-white" },
+  guestbook: { tag: "bg-stone-200 text-stone-800", eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
 };
 
 function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; title: string; tagline: string; about: string }) {
@@ -83,9 +87,10 @@ function DentalPanel() {
 export default function ProfileTabs() {
   const [tab, setTab] = useState<Tab>("music");
 
-  // #music / #dental 주소로 바로 해당 탭을 열 수 있게 함
+  // #music / #dental / #guestbook 주소로 바로 해당 탭을 열 수 있게 함
   useEffect(() => {
-    if (window.location.hash === "#dental") setTab("dental");
+    const hash = window.location.hash.slice(1);
+    if (hash === "dental" || hash === "guestbook") setTab(hash);
   }, []);
 
   // 음악 탭은 앨범 커버 그리드를 위해 더 넓게 씀
@@ -103,15 +108,15 @@ export default function ProfileTabs() {
         <nav className={`${width} mx-auto px-4 h-16 flex items-center justify-between`}>
           <span className="font-bold text-stone-900">{NAME_EN}</span>
           <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
-            {(["music", "dental"] as const).map((t) => (
+            {(["music", "dental", "guestbook"] as const).map((t) => (
               <button
                 key={t}
                 role="tab"
                 aria-selected={tab === t}
                 onClick={() => select(t)}
-                className={`px-4 py-1.5 rounded-full ${tab === t ? THEME[t].active : "text-stone-500 hover:text-stone-900"}`}
+                className={`px-3 sm:px-4 py-1.5 rounded-full ${tab === t ? THEME[t].active : "text-stone-500 hover:text-stone-900"}`}
               >
-                {t === "music" ? "음악" : "치과"}
+                {TAB_LABELS[t]}
               </button>
             ))}
           </div>
@@ -119,7 +124,9 @@ export default function ProfileTabs() {
       </header>
 
       <main role="tabpanel" className={`${width} mx-auto px-4`}>
-        {tab === "music" ? <MusicPanel /> : <DentalPanel />}
+        {tab === "music" && <MusicPanel />}
+        {tab === "dental" && <DentalPanel />}
+        {tab === "guestbook" && <Guestbook />}
       </main>
 
       <footer className="py-10 text-center text-sm text-stone-400">

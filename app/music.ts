@@ -11,10 +11,14 @@ export const MUSIC_PROFILE = {
   ],
 };
 
+// ── 아래 팀 프로젝트와 발매 음원 목록은 예시입니다 ─────────────────────
+// 실제 내용은 /admin 관리자 페이지에서 입력합니다.
+// 데이터베이스에 연결할 수 없을 때만 이 예시가 대신 표시됩니다.
+
 // ── 팀 프로젝트 ──────────────────────────────────────────────────
-// 활동했던 팀을 최근 순서로 적습니다.
 
 export type Team = {
+  id?: string;
   name: string;
   period: string;
   role: string;
@@ -45,6 +49,7 @@ export const TEAMS: Team[] = [
 // links: 해당 음원 페이지 주소. 없는 곳은 지우면 버튼도 사라집니다.
 
 export type Release = {
+  id?: string;
   title: string;
   type: "싱글" | "EP" | "정규";
   date: string; // YYYY.MM.DD
