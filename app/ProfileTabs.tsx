@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import MusicPanel from "./MusicPanel";
-import Guestbook from "./Guestbook";
+import Lounge from "./Lounge";
 
 // ── 치과 탭 내용 (음악 탭 내용은 app/music.ts) ──────────────────────
 // 음악과 치과는 서로 완전히 분리된 탭으로, 내용이 섞이지 않습니다.
@@ -25,14 +25,14 @@ const DENTAL = {
 };
 // ────────────────────────────────────────────────────────────────
 
-type Tab = "music" | "dental" | "guestbook";
+type Tab = "music" | "dental" | "lounge";
 
-const TAB_LABELS: Record<Tab, string> = { music: "음악", dental: "치과", guestbook: "방명록" };
+const TAB_LABELS: Record<Tab, string> = { music: "음악", dental: "치과", lounge: "라운지" };
 
 const THEME = {
   music:  { tag: "bg-amber-100 text-amber-800", eyebrow: "text-amber-700", active: "bg-amber-700 text-white" },
   dental: { tag: "bg-sky-100 text-sky-800",     eyebrow: "text-sky-700",   active: "bg-sky-700 text-white" },
-  guestbook: { tag: "bg-stone-200 text-stone-800", eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
+  lounge: { tag: "bg-stone-200 text-stone-800", eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
 };
 
 function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; title: string; tagline: string; about: string }) {
@@ -87,10 +87,10 @@ function DentalPanel() {
 export default function ProfileTabs() {
   const [tab, setTab] = useState<Tab>("music");
 
-  // #music / #dental / #guestbook 주소로 바로 해당 탭을 열 수 있게 함
+  // #music / #dental / #lounge 주소로 바로 해당 탭을 열 수 있게 함
   useEffect(() => {
     const hash = window.location.hash.slice(1);
-    if (hash === "dental" || hash === "guestbook") setTab(hash);
+    if (hash === "dental" || hash === "lounge") setTab(hash);
   }, []);
 
   // 음악 탭은 앨범 커버 그리드를 위해 더 넓게 씀
@@ -108,7 +108,7 @@ export default function ProfileTabs() {
         <nav className={`${width} mx-auto px-4 h-16 flex items-center justify-between`}>
           <span className="font-bold text-stone-900">{NAME_EN}</span>
           <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
-            {(["music", "dental", "guestbook"] as const).map((t) => (
+            {(["music", "dental", "lounge"] as const).map((t) => (
               <button
                 key={t}
                 role="tab"
@@ -126,7 +126,7 @@ export default function ProfileTabs() {
       <main role="tabpanel" className={`${width} mx-auto px-4`}>
         {tab === "music" && <MusicPanel />}
         {tab === "dental" && <DentalPanel />}
-        {tab === "guestbook" && <Guestbook />}
+        {tab === "lounge" && <Lounge />}
       </main>
 
       <footer className="py-10 text-center text-sm text-stone-400">

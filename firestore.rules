@@ -1,7 +1,7 @@
 rules_version = '2';
 
-// 누구나 음원·팀·방명록을 읽을 수 있고, 방명록 글은 누구나 남길 수 있음.
-// 음원·팀 수정과 방명록 글 삭제는 관리자 구글 계정만 가능.
+// 누구나 음원·팀·공지·방명록을 읽을 수 있고, 방명록 글은 누구나 남길 수 있음.
+// 음원·팀·공지 수정과 방명록 글 삭제는 관리자 구글 계정만 가능.
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
@@ -16,6 +16,11 @@ service cloud.firestore {
     }
 
     match /teams/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /notices/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }

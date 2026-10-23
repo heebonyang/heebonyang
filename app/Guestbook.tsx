@@ -65,17 +65,16 @@ export default function Guestbook() {
   };
 
   return (
-    <div className="py-16">
-      <h1 className="text-3xl font-bold text-stone-900">방명록</h1>
-      <p className="mt-3 text-stone-500">노래 감상, 응원, 안부 무엇이든 남겨 주세요.</p>
+    <div>
+      <p className="text-stone-500">노래 감상, 응원, 안부 무엇이든 남겨 주세요.</p>
 
       {entries === null ? (
-        <p className="mt-10 rounded-xl border border-stone-200 bg-white p-6 text-stone-500">
+        <p className="mt-6 rounded-xl border border-stone-200 bg-white p-6 text-stone-500">
           방명록을 준비하고 있어요. 조금만 기다려 주세요.
         </p>
       ) : (
         <>
-          <form onSubmit={submit} className="mt-10 rounded-2xl border border-stone-200 bg-white p-6 grid gap-4">
+          <form onSubmit={submit} className="mt-6 rounded-2xl border border-stone-200 bg-white p-6 grid gap-4">
             <label className="grid gap-1.5">
               <span className="text-sm text-stone-500">이름</span>
               <input

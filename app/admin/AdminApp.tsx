@@ -1,16 +1,17 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
-import { addDoc, collection, deleteDoc, doc, setDoc } from "firebase/firestore/lite";
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore/lite";
 import { getFirebase, type FirebaseServices } from "../firebase";
 import { loadMusic } from "../musicData";
 import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
 import { Cover } from "../MusicPanel";
 import type { Release, Team } from "../music";
+import { loadNotices, type Notice } from "../notices";
 
-type Section = "releases" | "teams" | "guestbook";
+type Section = "releases" | "teams" | "notices" | "guestbook";
 
-const SECTION_LABELS: Record<Section, string> = { releases: "음원", teams: "팀 프로젝트", guestbook: "방명록" };
+const SECTION_LABELS: Record<Section, string> = { releases: "음원", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
 
 const RELEASE_TYPES: Release["type"][] = ["싱글", "EP", "정규"];
 
@@ -294,6 +295,76 @@ function TeamEditor({
   );
 }
 
+const emptyNotice = (): Notice => ({ title: "", body: "", pinned: false, createdAt: null });
+
+function NoticeEditor({
+  initial,
+  onSave,
+  onCancel,
+}: {
+  initial: Notice;
+  onSave: (n: Notice) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [draft, setDraft] = useState<Notice>(initial);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      await onSave({ ...draft, title: draft.title.trim(), body: draft.body.trim() });
+    } catch (err) {
+      setError(errorMessage(err));
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-6">
+      <Field label="제목">
+        <input
+          id="notice-title"
+          required
+          value={draft.title}
+          onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+          className={inputClass}
+        />
+      </Field>
+      <Field label="내용">
+        <textarea
+          id="notice-body"
+          required
+          rows={6}
+          value={draft.body}
+          onChange={(e) => setDraft({ ...draft, body: e.target.value })}
+          className={inputClass}
+        />
+      </Field>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          id="notice-pinned"
+          type="checkbox"
+          checked={draft.pinned}
+          onChange={(e) => setDraft({ ...draft, pinned: e.target.checked })}
+        />
+        맨 위에 고정
+      </label>
+      {error && <p className="text-sm text-red-700">{error}</p>}
+      <div className="flex justify-end gap-2">
+        <button type="button" onClick={onCancel} className="px-4 py-2 rounded-full border border-stone-300 text-sm">
+          취소
+        </button>
+        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+          {saving ? "저장 중…" : "저장"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 // 삭제처럼 되돌릴 수 없는 동작은 한 번 더 눌러야 실행되게 함 (브라우저 확인창 대신)
 function ConfirmButton({ label, onConfirm }: { label: string; onConfirm: () => Promise<void> }) {
   const [armed, setArmed] = useState(false);
@@ -331,18 +402,25 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
   const [releases, setReleases] = useState<Release[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [guestbook, setGuestbook] = useState<GuestbookEntry[]>([]);
-  const [editing, setEditing] = useState<{ kind: "release"; value: Release } | { kind: "team"; value: Team } | null>(null);
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [editing, setEditing] = useState<
+    | { kind: "release"; value: Release }
+    | { kind: "team"; value: Team }
+    | { kind: "notice"; value: Notice }
+    | null
+  >(null);
   const [notice, setNotice] = useState("");
   const [loadError, setLoadError] = useState(false);
 
   const reload = useCallback(async () => {
-    const [music, entries] = await Promise.all([loadMusic(), loadGuestbook()]);
+    const [music, entries, noticeList] = await Promise.all([loadMusic(), loadGuestbook(), loadNotices()]);
     setLoadError(!music.remote);
     if (music.remote) {
       setReleases(music.releases);
       setTeams(music.teams);
     }
     setGuestbook(entries ?? []);
+    if (noticeList.remote) setNotices(noticeList.notices);
   }, []);
 
   useEffect(() => {
@@ -379,6 +457,14 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
       await addDoc(collection(fb.db, "teams"), data);
     }
     await done(`'${t.name}' 팀을 저장했어요.`);
+  };
+
+  const saveNotice = async (n: Notice) => {
+    const data = { title: n.title, body: n.body, pinned: n.pinned };
+    // 작성일은 처음 저장할 때만 기록하고, 수정할 때는 그대로 둠
+    if (n.id) await setDoc(doc(fb.db, "notices", n.id), data, { merge: true });
+    else await addDoc(collection(fb.db, "notices"), { ...data, createdAt: serverTimestamp() });
+    await done(`'${n.title}' 공지를 저장했어요.`);
   };
 
   const remove = async (path: string, id: string, label: string) => {
@@ -493,6 +579,44 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
           <p className="text-sm text-stone-500">
             팀을 삭제해도 그 팀으로 등록된 음원은 지워지지 않아요. 음원은 음원 메뉴에서 따로 정리해 주세요.
           </p>
+        </div>
+      )}
+
+      {section === "notices" && (
+        <div className="mt-8 grid gap-6">
+          {editing?.kind === "notice" ? (
+            <NoticeEditor
+              key={editing.value.id ?? "new"}
+              initial={editing.value}
+              onSave={saveNotice}
+              onCancel={() => setEditing(null)}
+            />
+          ) : (
+            <button
+              onClick={() => setEditing({ kind: "notice", value: emptyNotice() })}
+              className="w-fit px-5 py-2 rounded-full bg-stone-900 text-white text-sm"
+            >
+              + 새 공지 작성
+            </button>
+          )}
+          <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+            {notices.length === 0 && <li className="p-5 text-stone-500">아직 공지가 없어요.</li>}
+            {notices.map((n) => (
+              <li key={n.id} className="flex items-center gap-4 p-4">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-stone-900 truncate">
+                    {n.pinned && <span className="mr-2 text-xs px-2 py-0.5 rounded-full bg-stone-900 text-white">고정</span>}
+                    {n.title}
+                  </p>
+                  <p className="text-sm text-stone-500 tabular-nums">{formatDate(n.createdAt)}</p>
+                </div>
+                <button onClick={() => setEditing({ kind: "notice", value: n })} className="text-sm text-stone-700 hover:underline">
+                  수정
+                </button>
+                <ConfirmButton label="삭제" onConfirm={() => remove("notices", n.id!, `'${n.title}' 공지`)} />
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
