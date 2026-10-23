@@ -26,7 +26,16 @@ jobs:
       - name: Deploy Firestore rules
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NO_COLOR: "1"
         run: |
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
-          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" npx --yes firebase-tools@15 deploy --only firestore:rules --project heebonyang --non-interactive
+          status=0
+          out=$(GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" npx --yes firebase-tools@15 deploy --only firestore:rules --project heebonyang --non-interactive 2>&1) || status=$?
           rm -f "$RUNNER_TEMP/sa.json"
+          echo "$out"
+          # Firebase 콘솔에서 Firestore 데이터베이스를 아직 만들지 않았으면 이 단계만 건너뜀
+          if [ $status -ne 0 ] && echo "$out" | sed "s/\x1b\[[0-9;]*m//g" | grep -q "Permissions denied enabling firestore.googleapis.com"; then
+            echo "::warning::Firestore 데이터베이스가 아직 없어 규칙 반영을 건너뜁니다."
+            exit 0
+          fi
+          exit $status
