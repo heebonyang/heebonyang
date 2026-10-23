@@ -1,6 +1,11 @@
 "use client";
 import { useState } from "react";
-import { MUSIC_PROFILE, RELEASES, type Release } from "./music";
+import { MUSIC_PROFILE, RELEASES, TEAMS, type Release } from "./music";
+
+type Category = "solo" | "team";
+
+// 처음 크게 보여줄 음원: 목록에서 가장 위에 있는 솔로 음원
+const LATEST_SOLO = Math.max(0, RELEASES.findIndex((r) => !r.team));
 
 const PLATFORMS: { key: keyof Release["links"]; label: string }[] = [
   { key: "melon", label: "Melon" },
@@ -30,7 +35,7 @@ function Cover({ release, index, large = false }: { release: Release; index: num
     <div
       className={`w-full aspect-square bg-gradient-to-br ${PLACEHOLDER_TONES[index % PLACEHOLDER_TONES.length]} flex flex-col justify-between text-white ${large ? "p-8" : "p-4"}`}
     >
-      <span className={`tracking-[0.25em] uppercase opacity-70 ${large ? "text-xs" : "text-[10px]"}`}>Heebon Yang</span>
+      <span className={`tracking-[0.25em] uppercase opacity-70 ${large ? "text-xs" : "text-[10px]"}`}>{release.team ?? "Heebon Yang"}</span>
       <span className={`font-semibold leading-tight ${large ? "text-3xl" : "text-base"}`}>{release.title}</span>
     </div>
   );
@@ -46,7 +51,7 @@ function Featured({ release, index }: { release: Release; index: number }) {
 
       <div className="min-w-0">
         <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">
-          {index === 0 ? "Latest Release" : "Release"}
+          {release.team ? `Team Project · ${release.team}` : index === LATEST_SOLO ? "Latest Release" : "Release"}
         </p>
         <h2 className="mt-3 text-4xl sm:text-5xl font-bold text-stone-900 leading-tight">{release.title}</h2>
         <p className="mt-3 text-sm text-stone-500 tabular-nums">
@@ -87,8 +92,42 @@ function Featured({ release, index }: { release: Release; index: number }) {
   );
 }
 
+// RELEASES 안의 위치(index)를 그대로 넘겨서, 어느 카테고리에서 골라도 상단에 같은 음원이 뜨게 함
+function indexesOf(match: (r: Release) => boolean) {
+  return RELEASES.flatMap((r, i) => (match(r) ? [i] : []));
+}
+
+function ReleaseGrid({ indexes, selected, onChoose }: { indexes: number[]; selected: number; onChoose: (i: number) => void }) {
+  return (
+    <ul className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+      {indexes.map((i) => {
+        const release = RELEASES[i];
+        return (
+          <li key={release.title + release.date}>
+            <button onClick={() => onChoose(i)} className="group block w-full text-left">
+              <div
+                className={`overflow-hidden rounded-xl transition duration-200 group-hover:-translate-y-1 group-hover:shadow-xl ${
+                  i === selected ? "ring-2 ring-amber-700 ring-offset-4 ring-offset-stone-50" : ""
+                }`}
+              >
+                <Cover release={release} index={i} />
+              </div>
+              <p className="mt-3 font-medium text-stone-900 truncate">{release.title}</p>
+              <p className="text-sm text-stone-500 tabular-nums">
+                {release.type} · {release.date.slice(0, 4)}
+              </p>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export default function MusicPanel() {
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(LATEST_SOLO);
+  const [category, setCategory] = useState<Category>("solo");
+  const soloCount = RELEASES.filter((r) => !r.team).length;
 
   const choose = (i: number) => {
     setSelected(i);
@@ -105,29 +144,45 @@ export default function MusicPanel() {
       <Featured release={RELEASES[selected]} index={selected} />
 
       <section className="mt-20 py-14 border-t border-stone-200">
-        <div className="flex items-baseline justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="text-2xl font-bold text-stone-900">Discography</h2>
-          <span className="text-sm text-stone-500 tabular-nums">{RELEASES.length} releases</span>
-        </div>
-        <ul className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-          {RELEASES.map((release, i) => (
-            <li key={release.title + release.date}>
-              <button onClick={() => choose(i)} className="group block w-full text-left">
-                <div
-                  className={`overflow-hidden rounded-xl transition duration-200 group-hover:-translate-y-1 group-hover:shadow-xl ${
-                    i === selected ? "ring-2 ring-amber-700 ring-offset-4 ring-offset-stone-50" : ""
-                  }`}
-                >
-                  <Cover release={release} index={i} />
-                </div>
-                <p className="mt-3 font-medium text-stone-900 truncate">{release.title}</p>
-                <p className="text-sm text-stone-500 tabular-nums">
-                  {release.type} · {release.date.slice(0, 4)}
-                </p>
+          <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
+            {(["solo", "team"] as const).map((c) => (
+              <button
+                key={c}
+                role="tab"
+                aria-selected={category === c}
+                onClick={() => setCategory(c)}
+                className={`px-4 py-1.5 rounded-full tabular-nums ${
+                  category === c ? "bg-stone-900 text-white" : "text-stone-500 hover:text-stone-900"
+                }`}
+              >
+                {c === "solo" ? `솔로 ${soloCount}` : `팀 프로젝트 ${RELEASES.length - soloCount}`}
               </button>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        </div>
+
+        {category === "solo" ? (
+          <ReleaseGrid indexes={indexesOf((r) => !r.team)} selected={selected} onChoose={choose} />
+        ) : (
+          <div className="mt-4 divide-y divide-stone-200">
+            {TEAMS.map((team) => (
+              <div key={team.name} className="py-10">
+                <div className="grid gap-2 md:grid-cols-[1fr_2fr] md:gap-10">
+                  <div>
+                    <h3 className="text-xl font-bold text-stone-900">{team.name}</h3>
+                    <p className="mt-1 text-sm text-stone-500 tabular-nums">
+                      {team.period} · {team.role}
+                    </p>
+                  </div>
+                  {team.description && <p className="leading-relaxed">{team.description}</p>}
+                </div>
+                <ReleaseGrid indexes={indexesOf((r) => r.team === team.name)} selected={selected} onChoose={choose} />
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="py-14 border-t border-stone-200 grid gap-10 md:grid-cols-2">
