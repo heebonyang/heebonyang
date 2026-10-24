@@ -1,3 +1,5 @@
+import { SOCIAL } from "./SocialLinks";
+
 // ── 음악 탭 내용 ─────────────────────────────────────────────────
 export const MUSIC_PROFILE = {
   name: "양희본",
@@ -5,8 +7,8 @@ export const MUSIC_PROFILE = {
   about:
     "어쿠스틱 기타 한 대로 시작한 노래들입니다. 직접 쓰고, 직접 부르고, 가끔 작은 무대에 섭니다.",
   contact: [
-    { label: "Instagram", href: "#" },
-    { label: "YouTube", href: "#" },
+    { label: "Instagram", href: SOCIAL.instagram },
+    { label: "YouTube", href: SOCIAL.youtube },
     { label: "Email", href: "mailto:music@example.com" },
   ],
 };

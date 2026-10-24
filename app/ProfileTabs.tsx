@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import MusicPanel from "./MusicPanel";
 import Lounge from "./Lounge";
+import SocialLinks from "./SocialLinks";
 
 // ── 치과 탭 내용 (음악 탭 내용은 app/music.ts) ──────────────────────
 // 음악과 치과는 서로 완전히 분리된 탭으로, 내용이 섞이지 않습니다.
@@ -106,7 +107,11 @@ export default function ProfileTabs() {
     <div className="min-h-screen bg-stone-50 text-stone-700">
       <header className="sticky top-0 z-10 bg-stone-50/90 backdrop-blur border-b border-stone-200">
         <nav className={`${width} mx-auto px-4 h-16 flex items-center justify-between`}>
-          <span className="font-bold text-stone-900">{NAME_EN}</span>
+          {/* 좁은 화면에서는 이름을 숨겨 SNS 아이콘과 탭이 한 줄에 들어가게 함 */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="hidden sm:inline font-bold text-stone-900">{NAME_EN}</span>
+            <SocialLinks />
+          </div>
           <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
             {(["music", "dental", "lounge"] as const).map((t) => (
               <button
