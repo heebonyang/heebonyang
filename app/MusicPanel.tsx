@@ -251,17 +251,12 @@ export default function MusicPanel() {
         </div>
         <div>
           <h2 className="text-xl font-bold text-stone-900">공연·협업 문의</h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {MUSIC_PROFILE.contact.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="px-4 py-2 rounded-full border border-stone-300 text-sm hover:border-stone-900"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
+          <a
+            href={`mailto:${MUSIC_PROFILE.email}`}
+            className="mt-4 inline-block text-lg text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900"
+          >
+            {MUSIC_PROFILE.email}
+          </a>
         </div>
       </section>
     </>

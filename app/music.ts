@@ -1,16 +1,10 @@
-import { SOCIAL } from "./SocialLinks";
-
 // ── 음악 탭 내용 ─────────────────────────────────────────────────
 export const MUSIC_PROFILE = {
   name: "양희본",
   tagline: "일상의 이야기를 노래로 만듭니다.",
   about:
     "어쿠스틱 기타 한 대로 시작한 노래들입니다. 직접 쓰고, 직접 부르고, 가끔 작은 무대에 섭니다.",
-  contact: [
-    { label: "Instagram", href: SOCIAL.instagram },
-    { label: "YouTube", href: SOCIAL.youtube },
-    { label: "Email", href: "mailto:music@example.com" },
-  ],
+  email: "yhb5724@naver.com",
 };
 
 // ── 아래 팀 프로젝트와 발매 음원 목록은 예시입니다 ─────────────────────
