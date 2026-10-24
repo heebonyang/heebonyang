@@ -64,11 +64,11 @@ export type Release = {
 
 export const RELEASES: Release[] = [
   {
-    title: "다섯 번째 싱글",
+    title: "Day 3",
     type: "싱글",
     date: "2026.05.20",
     description: "퇴근길 버스 창가에서 쓴 노래입니다. 하루를 무사히 보낸 사람들에게 건네는 짧은 인사.",
-    tracks: ["다섯 번째 싱글", "다섯 번째 싱글 (Inst.)"],
+    tracks: ["Day 3"],
     audio: "/audio/day3.mp3",
     links: { melon: "#", spotify: "#", apple: "#", youtube: "#" },
   },
