@@ -1,8 +1,8 @@
 // ── SNS 주소 ─────────────────────────────────────────────────────
 // 여기만 바꾸면 상단 아이콘과 음악 탭 문의 버튼이 함께 바뀝니다.
 export const SOCIAL = {
-  instagram: "https://www.instagram.com/",
-  youtube: "https://www.youtube.com/",
+  instagram: "https://www.instagram.com/heebonyang",
+  youtube: "https://www.youtube.com/@양희본",
 };
 // ────────────────────────────────────────────────────────────────
 
