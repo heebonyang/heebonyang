@@ -191,6 +191,14 @@ function ReleaseEditor({
             className={inputClass}
           />
         </Field>
+        <Field label="미리듣기 음원 주소" hint="선택 · 예: /audio/파일이름.mp3">
+          <input
+            id="release-audio"
+            value={draft.audio ?? ""}
+            onChange={(e) => set("audio", e.target.value)}
+            className={inputClass}
+          />
+        </Field>
         <Field label="수록곡" hint="한 줄에 한 곡씩">
           <textarea
             id="release-tracks"
@@ -436,6 +444,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
   const saveRelease = async (r: Release) => {
     const { id, ...data } = r;
     if (!data.cover) delete data.cover;
+    if (!data.audio?.trim()) delete data.audio;
     if (id) await setDoc(doc(fb.db, "releases", id), data);
     else await addDoc(collection(fb.db, "releases"), data);
     await done(`'${r.title}'을(를) 저장했어요.`);

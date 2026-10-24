@@ -57,6 +57,13 @@ function Featured({ release, index, isLatest }: { release: Release; index: numbe
         </p>
         {release.description && <p className="mt-6 leading-relaxed">{release.description}</p>}
 
+        {release.audio && (
+          // key: 다른 음원을 고르면 플레이어를 새로 만들어 이전 곡 재생을 멈춤
+          <audio key={release.audio} controls preload="none" src={release.audio} className="mt-6 w-full">
+            브라우저가 오디오 재생을 지원하지 않아요.
+          </audio>
+        )}
+
         <ol className="mt-6 border-t border-stone-200">
           {release.tracks.map((track, i) => (
             <li key={i} className="flex gap-4 py-2.5 border-b border-stone-200 text-sm">

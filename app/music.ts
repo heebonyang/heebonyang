@@ -47,6 +47,7 @@ export const TEAMS: Team[] = [
 // cover: public/covers/ 폴더에 이미지를 넣고 "/covers/파일이름.jpg"로 적습니다.
 //        비워 두면 제목이 적힌 임시 커버가 표시됩니다.
 // links: 해당 음원 페이지 주소. 없는 곳은 지우면 버튼도 사라집니다.
+// audio: 페이지에서 바로 들려줄 음원 파일. public/audio/ 폴더에 넣고 "/audio/파일이름.mp3"로 적습니다.
 
 export type Release = {
   id?: string;
@@ -55,6 +56,7 @@ export type Release = {
   date: string; // YYYY.MM.DD
   team?: string;
   cover?: string;
+  audio?: string;
   description?: string;
   tracks: string[];
   links: { melon?: string; spotify?: string; apple?: string; youtube?: string };
@@ -67,6 +69,7 @@ export const RELEASES: Release[] = [
     date: "2026.05.20",
     description: "퇴근길 버스 창가에서 쓴 노래입니다. 하루를 무사히 보낸 사람들에게 건네는 짧은 인사.",
     tracks: ["다섯 번째 싱글", "다섯 번째 싱글 (Inst.)"],
+    audio: "/audio/day3.mp3",
     links: { melon: "#", spotify: "#", apple: "#", youtube: "#" },
   },
   {
