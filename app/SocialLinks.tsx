@@ -26,8 +26,8 @@ function YouTubeIcon() {
 }
 
 const LINKS = [
-  { href: SOCIAL.instagram, label: "Instagram", Icon: InstagramIcon, hover: "hover:text-[#d62976]" },
   { href: SOCIAL.youtube, label: "YouTube", Icon: YouTubeIcon, hover: "hover:text-[#ff0000]" },
+  { href: SOCIAL.instagram, label: "Instagram", Icon: InstagramIcon, hover: "hover:text-[#d62976]" },
 ];
 
 export default function SocialLinks() {
