@@ -64,6 +64,14 @@ export type Release = {
 
 export const RELEASES: Release[] = [
   {
+    title: "내 남은 초록을 모두 그대에게",
+    type: "싱글",
+    date: "2026.10.24",
+    tracks: ["내 남은 초록을 모두 그대에게"],
+    audio: "/audio/my-remaining-green.mp3",
+    links: {},
+  },
+  {
     title: "Day 3",
     type: "싱글",
     date: "2026.05.20",
