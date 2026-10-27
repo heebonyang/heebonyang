@@ -2,6 +2,7 @@
 import { useState } from "react";
 import SocialLinks from "../SocialLinks";
 import { ALBUM0, formatWon } from "../shop";
+import LimitedStock from "../LimitedStock";
 
 function CopyAccount() {
   const { name, account, holder } = ALBUM0.bank;
@@ -54,19 +55,12 @@ export default function ShopPage() {
           <h1 className="mt-3 text-4xl sm:text-5xl font-bold text-stone-900">{ALBUM0.title}</h1>
           <p className="mt-5 leading-relaxed">{ALBUM0.intro}</p>
 
-          <dl className="mt-8 grid grid-cols-2 gap-4">
-            <div className="rounded-xl border border-stone-200 bg-white p-4">
-              <dt className="text-sm text-stone-500">가격</dt>
-              <dd className="mt-1 text-xl font-semibold text-stone-900 tabular-nums">{formatWon(ALBUM0.price)}</dd>
-              <dd className="text-sm text-stone-500">{ALBUM0.priceNote}</dd>
-            </div>
-            <div className="rounded-xl border border-stone-200 bg-white p-4">
-              <dt className="text-sm text-stone-500">남은 수량</dt>
-              <dd className="mt-1 text-xl font-semibold text-stone-900 tabular-nums">
-                {soldOut ? "품절" : `${ALBUM0.stock}장`}
-              </dd>
-            </div>
-          </dl>
+          <div className="mt-8 rounded-xl border border-stone-200 bg-white p-5">
+            <LimitedStock />
+          </div>
+          <p className="mt-4 text-xl font-semibold text-stone-900 tabular-nums">
+            {formatWon(ALBUM0.price)} <span className="text-sm font-normal text-stone-500">· {ALBUM0.priceNote}</span>
+          </p>
 
           {soldOut ? (
             <p className="mt-10 rounded-xl border border-stone-200 bg-white p-5">
