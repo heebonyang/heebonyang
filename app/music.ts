@@ -19,6 +19,7 @@ export type Team = {
   period: string;
   role: string;
   description?: string;
+  order?: number; // 관리자 페이지에서 정한 표시 순서 (작을수록 위)
 };
 
 export const TEAMS: Team[] = [

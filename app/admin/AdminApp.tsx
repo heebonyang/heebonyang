@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
-import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore/lite";
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore/lite";
 import { getFirebase, type FirebaseServices } from "../firebase";
 import { loadMusic } from "../musicData";
 import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
@@ -467,9 +467,26 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
         );
       }
     } else {
-      await addDoc(collection(fb.db, "teams"), data);
+      await addDoc(collection(fb.db, "teams"), { ...data, order: teams.length });
     }
     await done(`'${t.name}' 팀을 저장했어요.`);
+  };
+
+  // 팀 순서 바꾸기: 위/아래 팀과 자리를 바꾸고 모든 팀의 순서 번호를 0부터 다시 매김
+  const moveTeam = async (index: number, delta: -1 | 1) => {
+    const target = index + delta;
+    if (target < 0 || target >= teams.length) return;
+    const next = [...teams];
+    [next[index], next[target]] = [next[target], next[index]];
+    setTeams(next.map((t, i) => ({ ...t, order: i })));
+    try {
+      const batch = writeBatch(fb.db);
+      next.forEach((t, i) => batch.set(doc(fb.db, "teams", t.id!), { order: i }, { merge: true }));
+      await batch.commit();
+    } catch (e) {
+      setNotice(errorMessage(e));
+      await reload();
+    }
   };
 
   const saveNotice = async (n: Notice) => {
@@ -608,8 +625,26 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
           )}
           <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
             {teams.length === 0 && <li className="p-5 text-stone-500">아직 등록된 팀이 없어요.</li>}
-            {teams.map((t) => (
+            {teams.map((t, i) => (
               <li key={t.id} className="flex items-center gap-4 p-4">
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => moveTeam(i, -1)}
+                    disabled={i === 0}
+                    aria-label={`${t.name} 위로`}
+                    className="px-2 text-stone-500 hover:text-stone-900 disabled:opacity-25"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    onClick={() => moveTeam(i, 1)}
+                    disabled={i === teams.length - 1}
+                    aria-label={`${t.name} 아래로`}
+                    className="px-2 text-stone-500 hover:text-stone-900 disabled:opacity-25"
+                  >
+                    ▼
+                  </button>
+                </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-stone-900">{t.name}</p>
                   <p className="text-sm text-stone-500 tabular-nums">
@@ -624,7 +659,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
             ))}
           </ul>
           <p className="text-sm text-stone-500">
-            팀을 삭제해도 그 팀으로 등록된 음원은 지워지지 않아요. 음원은 음원 메뉴에서 따로 정리해 주세요.
+            ▲ ▼로 순서를 바꾸면 음악 탭에도 같은 순서로 보여요. 팀을 삭제해도 그 팀으로 등록된 음원은 지워지지 않아요.
           </p>
         </div>
       )}

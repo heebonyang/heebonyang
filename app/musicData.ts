@@ -12,7 +12,13 @@ export type MusicData = {
 };
 
 export const sortReleases = (list: Release[]) => [...list].sort((a, b) => b.date.localeCompare(a.date));
-export const sortTeams = (list: Team[]) => [...list].sort((a, b) => b.period.localeCompare(a.period));
+// 관리자 페이지에서 정한 순서대로, 순서가 없는 팀은 맨 뒤에 활동 기간 최신순
+export const sortTeams = (list: Team[]) =>
+  [...list].sort(
+    (a, b) =>
+      (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) ||
+      (b.period ?? "").localeCompare(a.period ?? ""),
+  );
 
 // showStaticWhenEmpty: 데이터베이스가 비어 있으면 app/music.ts의 내용을 대신 보여줌
 // (관리자 페이지에서 기존 내용을 가져오기 전까지 사이트가 비어 보이지 않게 함)
