@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { MUSIC_PROFILE, type Release, type Team } from "./music";
 import { useMusicData } from "./musicData";
+import AlbumBanner from "./AlbumBanner";
 
 type Category = "solo" | "team";
 
@@ -225,6 +226,8 @@ export default function MusicPanel() {
         <h1 className="text-2xl font-bold text-stone-900">{MUSIC_PROFILE.name}</h1>
         <p className="text-stone-500">{MUSIC_PROFILE.tagline}</p>
       </div>
+
+      <AlbumBanner />
 
       {!data ? (
         <div className="grid gap-8 md:grid-cols-2 md:gap-12" aria-label="불러오는 중">
