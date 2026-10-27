@@ -258,7 +258,7 @@ function TeamEditor({
     setSaving(true);
     setError("");
     try {
-      await onSave({ ...draft, name: draft.name.trim() });
+      await onSave({ ...draft, name: draft.name.trim(), period: draft.period.trim(), role: draft.role.trim() });
     } catch (err) {
       setError(errorMessage(err));
       setSaving(false);
@@ -271,11 +271,11 @@ function TeamEditor({
         <Field label="팀 이름">
           <input id="team-name" required value={draft.name} onChange={(e) => set("name", e.target.value)} className={inputClass} />
         </Field>
-        <Field label="활동 기간" hint="예: 2021 – 2023">
-          <input id="team-period" required value={draft.period} onChange={(e) => set("period", e.target.value)} className={inputClass} />
+        <Field label="활동 기간" hint="선택 · 예: 2021 – 2023">
+          <input id="team-period" value={draft.period} onChange={(e) => set("period", e.target.value)} className={inputClass} />
         </Field>
-        <Field label="맡은 역할" hint="예: 보컬 · 작곡">
-          <input id="team-role" required value={draft.role} onChange={(e) => set("role", e.target.value)} className={inputClass} />
+        <Field label="맡은 역할" hint="선택 · 예: 보컬 · 작곡">
+          <input id="team-role" value={draft.role} onChange={(e) => set("role", e.target.value)} className={inputClass} />
         </Field>
       </div>
       <Field label="소개" hint="선택">
@@ -613,7 +613,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-stone-900">{t.name}</p>
                   <p className="text-sm text-stone-500 tabular-nums">
-                    {t.period} · {t.role} · 음원 {releases.filter((r) => r.team === t.name).length}개
+                    {[t.period, t.role, `음원 ${releases.filter((r) => r.team === t.name).length}개`].filter(Boolean).join(" · ")}
                   </p>
                 </div>
                 <button onClick={() => setEditing({ kind: "team", value: t })} className="text-sm text-stone-700 hover:underline">

@@ -186,9 +186,11 @@ function Discography({
               <div className="grid gap-2 md:grid-cols-[1fr_2fr] md:gap-10">
                 <div>
                   <h3 className="text-xl font-bold text-stone-900">{team.name}</h3>
-                  <p className="mt-1 text-sm text-stone-500 tabular-nums">
-                    {team.period} · {team.role}
-                  </p>
+                  {(team.period || team.role) && (
+                    <p className="mt-1 text-sm text-stone-500 tabular-nums">
+                      {[team.period, team.role].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
                 </div>
                 {team.description && <p className="leading-relaxed">{team.description}</p>}
               </div>
