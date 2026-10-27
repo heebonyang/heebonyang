@@ -10,9 +10,9 @@ export type Notice = {
   createdAt: Timestamp | null;
 };
 
-// 데이터베이스에 연결할 수 없을 때 보여주는 공지
-// (관리자 페이지를 쓰기 시작하면 이 공지들은 관리자 페이지에서 다시 등록해야 함)
-const SAMPLE_NOTICES: Notice[] = [
+// 데이터베이스에 공지가 없거나 연결할 수 없을 때 보여주는 공지
+// (관리자 페이지의 '기존 내용 가져오기'로 데이터베이스에 옮길 수 있음)
+export const STATIC_NOTICES: Notice[] = [
   {
     title: "🎙 양희본 세로 라이브 100일, 시작합니다",
     body: `2026년 12월 14일 월요일부터 100일 동안, 매일 밤 10시에 세로 라이브를 켭니다.
@@ -41,12 +41,14 @@ export const sortNotices = (list: Notice[]) =>
     (a, b) => Number(b.pinned) - Number(a.pinned) || (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0),
   );
 
-export async function loadNotices(): Promise<{ notices: Notice[]; remote: boolean }> {
-  const fallback = { notices: SAMPLE_NOTICES, remote: false };
+// showStaticWhenEmpty: 데이터베이스에 공지가 없으면 위 공지를 대신 보여줌
+export async function loadNotices({ showStaticWhenEmpty = true } = {}): Promise<{ notices: Notice[]; remote: boolean }> {
+  const fallback = { notices: STATIC_NOTICES, remote: false };
   const fb = await getFirebase();
   if (!fb) return fallback;
   try {
     const snap = await getDocs(collection(fb.db, "notices"));
+    if (showStaticWhenEmpty && snap.empty) return fallback;
     return { notices: sortNotices(snap.docs.map((d) => ({ ...(d.data() as Notice), id: d.id }))), remote: true };
   } catch {
     return fallback;

@@ -53,6 +53,8 @@ export type Release = {
   team?: string;
   cover?: string;
   audio?: string;
+  // true: 화면 구성을 보여주기 위한 예시 음원 (관리자 페이지로 가져가지 않음)
+  example?: boolean;
   description?: string;
   tracks: string[];
   links: { melon?: string; spotify?: string; apple?: string; youtube?: string };
@@ -78,6 +80,7 @@ export const RELEASES: Release[] = [
   },
   {
     title: "첫 번째 EP",
+    example: true,
     type: "EP",
     date: "2025.09.12",
     tracks: ["Intro", "수록곡 2", "수록곡 3", "수록곡 4"],
@@ -85,6 +88,7 @@ export const RELEASES: Release[] = [
   },
   {
     title: "네 번째 싱글",
+    example: true,
     type: "싱글",
     date: "2025.03.03",
     tracks: ["네 번째 싱글"],
@@ -92,6 +96,7 @@ export const RELEASES: Release[] = [
   },
   {
     title: "세 번째 싱글",
+    example: true,
     type: "싱글",
     date: "2024.08.30",
     tracks: ["세 번째 싱글"],
@@ -99,6 +104,7 @@ export const RELEASES: Release[] = [
   },
   {
     title: "두 번째 싱글",
+    example: true,
     type: "싱글",
     date: "2024.01.15",
     tracks: ["두 번째 싱글"],
@@ -106,6 +112,7 @@ export const RELEASES: Release[] = [
   },
   {
     title: "데뷔 싱글",
+    example: true,
     type: "싱글",
     date: "2023.06.01",
     tracks: ["데뷔 싱글"],
@@ -113,6 +120,7 @@ export const RELEASES: Release[] = [
   },
   {
     title: "팀 A 정규 1집",
+    example: true,
     type: "정규",
     date: "2022.11.04",
     team: "팀 프로젝트 A",
@@ -121,6 +129,7 @@ export const RELEASES: Release[] = [
   },
   {
     title: "팀 A 싱글",
+    example: true,
     type: "싱글",
     date: "2021.07.16",
     team: "팀 프로젝트 A",
@@ -129,6 +138,7 @@ export const RELEASES: Release[] = [
   },
   {
     title: "팀 B EP",
+    example: true,
     type: "EP",
     date: "2020.03.27",
     team: "팀 프로젝트 B",

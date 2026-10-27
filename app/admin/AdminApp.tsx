@@ -6,8 +6,8 @@ import { getFirebase, type FirebaseServices } from "../firebase";
 import { loadMusic } from "../musicData";
 import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
 import { Cover } from "../MusicPanel";
-import type { Release, Team } from "../music";
-import { loadNotices, type Notice } from "../notices";
+import { RELEASES, type Release, type Team } from "../music";
+import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
 
 type Section = "releases" | "teams" | "notices" | "guestbook";
 
@@ -421,7 +421,11 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
   const [loadError, setLoadError] = useState(false);
 
   const reload = useCallback(async () => {
-    const [music, entries, noticeList] = await Promise.all([loadMusic(), loadGuestbook(), loadNotices()]);
+    const [music, entries, noticeList] = await Promise.all([
+      loadMusic({ showStaticWhenEmpty: false }),
+      loadGuestbook(),
+      loadNotices({ showStaticWhenEmpty: false }),
+    ]);
     setLoadError(!music.remote);
     if (music.remote) {
       setReleases(music.releases);
@@ -476,6 +480,31 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
     await done(`'${n.title}' 공지를 저장했어요.`);
   };
 
+  // 사이트 코드에 적혀 있던 실제 음원(예시 제외)과 공지를 데이터베이스로 옮김
+  const importStatic = async () => {
+    try {
+      if (releases.length === 0) {
+        for (const r of RELEASES.filter((x) => !x.example)) {
+          const { id: _id, example: _example, ...data } = r;
+          await addDoc(collection(fb.db, "releases"), data);
+        }
+      }
+      if (notices.length === 0) {
+        for (const n of STATIC_NOTICES) {
+          await addDoc(collection(fb.db, "notices"), {
+            title: n.title,
+            body: n.body,
+            pinned: n.pinned,
+            createdAt: n.createdAt ?? serverTimestamp(),
+          });
+        }
+      }
+      await done("기존 음원과 공지를 가져왔어요. 이제 관리자 페이지에서 수정할 수 있어요.");
+    } catch (e) {
+      setNotice(errorMessage(e));
+    }
+  };
+
   const remove = async (path: string, id: string, label: string) => {
     try {
       await deleteDoc(doc(fb.db, path, id));
@@ -512,6 +541,15 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
           </button>
         ))}
       </div>
+
+      {(releases.length === 0 || notices.length === 0) && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-white p-5">
+          <p className="text-sm">
+            지금 사이트에 보이는 음원(Day 3, 내 남은 초록을 모두 그대에게)과 공지를 데이터베이스로 옮겨요. 처음 한 번만 하면 돼요.
+          </p>
+          <ConfirmButton label="기존 내용 가져오기" onConfirm={importStatic} />
+        </div>
+      )}
 
       {notice && <p className="mt-6 rounded-lg bg-stone-100 px-4 py-3 text-sm text-stone-700">{notice}</p>}
 
