@@ -5,6 +5,23 @@ import { loadNotices, type Notice } from "./notices";
 
 type Board = "notices" | "guestbook";
 
+// 공지 본문 속 http(s) 주소를 눌러서 열 수 있는 링크로 바꿈
+function Linkified({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+        /^https?:\/\//.test(part) ? (
+          <a key={i} href={part} target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-stone-900">
+            {part}
+          </a>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 const BOARD_LABELS: Record<Board, string> = { notices: "공지", guestbook: "방명록" };
 
 function Notices() {
@@ -36,7 +53,7 @@ function Notices() {
               ▾
             </span>
           </button>
-          {open === i && <p className="pb-6 leading-relaxed whitespace-pre-wrap break-words">{notice.body}</p>}
+          {open === i && <p className="pb-6 leading-relaxed whitespace-pre-wrap break-words"><Linkified text={notice.body} /></p>}
         </li>
       ))}
     </ul>
