@@ -1,32 +1,14 @@
 "use client";
-import { useState } from "react";
 import SocialLinks from "../SocialLinks";
 import { ALBUM0, formatWon } from "../shop";
 import LimitedStock from "../LimitedStock";
 
-function CopyAccount() {
+function BankAccount() {
   const { name, account, holder } = ALBUM0.bank;
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(account);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // 복사가 막힌 브라우저에서는 계좌번호 글자를 직접 선택할 수 있게 둠
-    }
-  };
-
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-stone-100 px-4 py-3">
-      <span className="tabular-nums select-all">
-        {name} <span className="font-semibold text-stone-900">{account}</span> {holder}
-      </span>
-      <button onClick={copy} className="ml-auto text-sm px-3 py-1 rounded-full border border-stone-300 bg-white hover:border-stone-900">
-        {copied ? "복사했어요" : "계좌번호 복사"}
-      </button>
-    </div>
+    <p className="mt-3 rounded-xl bg-stone-100 px-4 py-3 tabular-nums">
+      {name} <span className="font-semibold text-stone-900">{account}</span> {holder}
+    </p>
   );
 }
 
@@ -53,7 +35,7 @@ export default function ShopPage() {
         <div className="min-w-0">
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">{ALBUM0.format}</p>
           <h1 className="mt-3 text-4xl sm:text-5xl font-bold text-stone-900">{ALBUM0.title}</h1>
-          <p className="mt-5 leading-relaxed">{ALBUM0.intro}</p>
+          {ALBUM0.intro && <p className="mt-5 leading-relaxed">{ALBUM0.intro}</p>}
 
           <div className="mt-8 rounded-xl border border-stone-200 bg-white p-5">
             <LimitedStock />
@@ -92,7 +74,7 @@ export default function ShopPage() {
                     <p className="mt-1 text-sm text-stone-500 tabular-nums">
                       1장당 {formatWon(ALBUM0.price)} ({ALBUM0.priceNote})
                     </p>
-                    <CopyAccount />
+                    <BankAccount />
                   </div>
                 </li>
                 <li className="flex gap-4">

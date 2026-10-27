@@ -9,8 +9,7 @@ export const ALBUM0 = {
   priceNote: "택배비 포함",
   stock: 369,
   total: 500, // 한정판 전체 수량
-  intro:
-    "기타 한 대와 목소리로 만든 노래들을 한 장의 CD에 담았습니다.",
+  intro: "", // 앨범 소개글 (비워 두면 화면에 표시되지 않음)
   support: "이 CD를 구매해 주시면 다음 앨범 제작에 큰 힘이 됩니다.",
   orderForm: "https://docs.google.com/forms/d/1ZVe9iBWmSI_Enf1Es3uW0Jdx5yBZcYZkzLDJ96Ru2QY/viewform",
   bank: { name: "신한은행", account: "957-06-111158", holder: "양희본" },

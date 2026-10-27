@@ -48,7 +48,7 @@ function AlbumSaleNotice() {
             <img src={ALBUM0.cover} alt={`${ALBUM0.title} CD 표지`} className="w-full aspect-square object-cover" />
           </a>
           <div className="min-w-0 grid gap-4 content-start">
-            <p className="leading-relaxed">{ALBUM0.intro}</p>
+            {ALBUM0.intro && <p className="leading-relaxed">{ALBUM0.intro}</p>}
             <LimitedStock />
             <p className="tabular-nums">
               💰 1장 {formatWon(ALBUM0.price)} ({ALBUM0.priceNote})

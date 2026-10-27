@@ -15,7 +15,7 @@ export default function AlbumBanner() {
           {soldOut ? "Sold Out" : "한정판 CD 판매 중"}
         </p>
         <h2 className="mt-2 text-3xl font-bold text-stone-900">{ALBUM0.title}</h2>
-        <p className="mt-3 leading-relaxed">{ALBUM0.intro}</p>
+        {ALBUM0.intro && <p className="mt-3 leading-relaxed">{ALBUM0.intro}</p>}
         <div className="mt-5">
           <LimitedStock size="sm" />
         </div>
