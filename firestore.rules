@@ -25,6 +25,8 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // 방명록: 누구나 이름·비밀번호를 정해 글을 남기고, 같은 비밀번호로 자기 글을 지울 수 있음.
+    // 비밀번호는 브라우저에서 해시로 바꾼 값만 guestbookKeys에 저장하고, 이 컬렉션은 아무도 읽을 수 없음.
     match /guestbook/{id} {
       allow read: if true;
       allow create: if request.resource.data.keys().hasOnly(["name", "message", "createdAt"])
@@ -34,8 +36,31 @@ service cloud.firestore {
         && request.resource.data.message is string
         && request.resource.data.message.size() > 0
         && request.resource.data.message.size() <= 500
-        && request.resource.data.createdAt == request.time;
-      allow delete: if isAdmin();
+        && request.resource.data.createdAt == request.time
+        && existsAfter(/databases/$(database)/documents/guestbookKeys/$(id));
+      // 작성자 삭제: 같은 묶음 요청으로 guestbookUnlock에 남긴 해시가 저장된 해시와 같아야 함
+      allow delete: if isAdmin()
+        || getAfter(/databases/$(database)/documents/guestbookUnlock/$(id)).data.hash
+          == get(/databases/$(database)/documents/guestbookKeys/$(id)).data.hash;
+    }
+
+    // 글을 쓸 때 같은 묶음 요청으로 한 번만 만들 수 있음
+    match /guestbookKeys/{id} {
+      allow read: if false;
+      allow create: if request.resource.data.keys().hasOnly(["hash"])
+        && request.resource.data.hash is string
+        && request.resource.data.hash.size() == 64
+        && !exists(/databases/$(database)/documents/guestbook/$(id))
+        && existsAfter(/databases/$(database)/documents/guestbook/$(id));
+    }
+
+    // 글을 지울 때 같은 묶음 요청으로만 만들 수 있음 (확인용, 아무도 읽을 수 없음)
+    match /guestbookUnlock/{id} {
+      allow read: if false;
+      allow create: if request.resource.data.keys().hasOnly(["hash"])
+        && request.resource.data.hash is string
+        && exists(/databases/$(database)/documents/guestbook/$(id))
+        && !existsAfter(/databases/$(database)/documents/guestbook/$(id));
     }
   }
 }
