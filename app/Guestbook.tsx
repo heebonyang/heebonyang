@@ -124,6 +124,22 @@ export function formatDate(ts: Timestamp | null) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
+// 이름 첫 글자 동그라미 색: 같은 이름은 항상 같은 색
+const AVATAR_TONES = [
+  "bg-amber-100 text-amber-800",
+  "bg-sky-100 text-sky-800",
+  "bg-emerald-100 text-emerald-800",
+  "bg-rose-100 text-rose-800",
+  "bg-violet-100 text-violet-800",
+  "bg-stone-200 text-stone-700",
+];
+
+function avatarTone(name: string) {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return AVATAR_TONES[h % AVATAR_TONES.length];
+}
+
 export default function Guestbook() {
   // undefined: 불러오는 중 / null: 방명록을 쓸 수 없는 상태
   const [entries, setEntries] = useState<GuestbookEntry[] | null | undefined>(undefined);
@@ -153,7 +169,14 @@ export default function Guestbook() {
 
   return (
     <div>
-      <p className="text-stone-500">노래 감상, 응원, 안부 무엇이든 남겨 주세요.</p>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-stone-500">노래 감상, 응원, 안부 무엇이든 남겨 주세요.</p>
+        {entries && entries.length > 0 && (
+          <span className="text-sm text-stone-500 tabular-nums">
+            글 <span className="font-semibold text-stone-900">{entries.length}</span>개
+          </span>
+        )}
+      </div>
 
       {entries === null ? (
         <p className="mt-6 rounded-xl border border-stone-200 bg-white p-6 text-stone-500">
@@ -161,7 +184,39 @@ export default function Guestbook() {
         </p>
       ) : (
         <>
-          <form onSubmit={submit} className="mt-6 rounded-2xl border border-stone-200 bg-white p-6 grid gap-4">
+          <ul className="mt-6 grid gap-3">
+            {entries === undefined && <li className="py-6 text-stone-400">불러오는 중…</li>}
+            {entries?.length === 0 && (
+              <li className="rounded-2xl border border-dashed border-stone-300 p-8 text-center text-stone-500">
+                아직 글이 없어요. 아래에서 첫 번째 글을 남겨 주세요.
+              </li>
+            )}
+            {entries?.map((entry) => (
+              <li key={entry.id} className="flex gap-4 rounded-2xl border border-stone-200 bg-white p-5">
+                <span
+                  aria-hidden
+                  className={`shrink-0 grid place-items-center w-10 h-10 rounded-full font-semibold ${avatarTone(entry.name)}`}
+                >
+                  {entry.name.trim().charAt(0)}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <span>
+                      <span className="font-semibold text-stone-900">{entry.name}</span>
+                      <span className="ml-2 text-sm text-stone-400 tabular-nums">{formatDate(entry.createdAt)}</span>
+                    </span>
+                    <DeleteControl id={entry.id} onDeleted={() => setEntries((list) => list?.filter((x) => x.id !== entry.id))} />
+                  </div>
+                  <p className="mt-2 text-[15px] leading-relaxed text-stone-800 whitespace-pre-wrap break-words">
+                    {entry.message}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <form onSubmit={submit} className="mt-12 rounded-2xl border border-stone-200 bg-white p-6 grid gap-4">
+            <h3 className="text-lg font-bold text-stone-900">방명록 남기기</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-1.5">
                 <span className="text-sm text-stone-500">이름</span>
@@ -222,23 +277,6 @@ export default function Guestbook() {
               </button>
             </div>
           </form>
-
-          <ul className="mt-12 divide-y divide-stone-200 border-t border-stone-200">
-            {entries === undefined && <li className="py-6 text-stone-400">불러오는 중…</li>}
-            {entries?.length === 0 && <li className="py-6 text-stone-500">첫 번째 글을 남겨 주세요.</li>}
-            {entries?.map((entry) => (
-              <li key={entry.id} className="py-6">
-                <div className="flex items-baseline justify-between gap-4">
-                  <span>
-                    <span className="font-medium text-stone-900">{entry.name}</span>
-                    <span className="ml-3 text-sm text-stone-400 tabular-nums">{formatDate(entry.createdAt)}</span>
-                  </span>
-                  <DeleteControl id={entry.id} onDeleted={() => setEntries((list) => list?.filter((x) => x.id !== entry.id))} />
-                </div>
-                <p className="mt-2 leading-relaxed whitespace-pre-wrap break-words">{entry.message}</p>
-              </li>
-            ))}
-          </ul>
         </>
       )}
     </div>
