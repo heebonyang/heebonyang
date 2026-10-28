@@ -124,20 +124,24 @@ export function formatDate(ts: Timestamp | null) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// 이름 첫 글자 동그라미 색: 같은 이름은 항상 같은 색
-const AVATAR_TONES = [
-  "bg-amber-100 text-amber-800",
-  "bg-sky-100 text-sky-800",
-  "bg-emerald-100 text-emerald-800",
-  "bg-rose-100 text-rose-800",
-  "bg-violet-100 text-violet-800",
-  "bg-stone-200 text-stone-700",
+// 이름 색: 글마다 무작위로 정하되, 새로고침해도 같은 글은 같은 색 (글 번호로 정함)
+const NAME_COLORS = [
+  "text-rose-600",
+  "text-orange-600",
+  "text-amber-700",
+  "text-lime-700",
+  "text-emerald-700",
+  "text-teal-700",
+  "text-sky-700",
+  "text-indigo-600",
+  "text-violet-700",
+  "text-fuchsia-700",
 ];
 
-function avatarTone(name: string) {
+function nameColor(postId: string) {
   let h = 0;
-  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return AVATAR_TONES[h % AVATAR_TONES.length];
+  for (const ch of postId) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return NAME_COLORS[h % NAME_COLORS.length];
 }
 
 export default function Guestbook() {
@@ -192,17 +196,11 @@ export default function Guestbook() {
               </li>
             )}
             {entries?.map((entry) => (
-              <li key={entry.id} className="flex gap-4 rounded-2xl border border-stone-200 bg-white p-5">
-                <span
-                  aria-hidden
-                  className={`shrink-0 grid place-items-center w-10 h-10 rounded-full font-semibold ${avatarTone(entry.name)}`}
-                >
-                  {entry.name.trim().charAt(0)}
-                </span>
-                <div className="min-w-0 flex-1">
+              <li key={entry.id} className="rounded-2xl border border-stone-200 bg-white p-5">
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <span>
-                      <span className="font-semibold text-stone-900">{entry.name}</span>
+                      <span className={`font-semibold ${nameColor(entry.id)}`}>{entry.name}</span>
                       <span className="ml-2 text-sm text-stone-400 tabular-nums">{formatDate(entry.createdAt)}</span>
                     </span>
                     <DeleteControl id={entry.id} onDeleted={() => setEntries((list) => list?.filter((x) => x.id !== entry.id))} />
