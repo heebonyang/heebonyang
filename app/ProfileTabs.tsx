@@ -12,8 +12,6 @@ const NAME_EN = "Heebon Yang";
 const DENTAL = {
   role: "치과의사",
   title: "양희본",
-  about:
-    "충분히 설명하고, 꼭 필요한 치료만 권합니다. 치료가 끝난 뒤에도 편하게 다시 찾을 수 있는 치과를 지향합니다.",
   items: [
     { label: "전문 분야", value: "일반 진료 · 보존 · 보철" },
     { label: "소속", value: "○○치과의원" },
@@ -37,7 +35,7 @@ const THEME = {
 };
 
 // tagline(머리글)은 관리자 페이지 '머리글'에서 수정
-function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; title: string; tagline?: string; about: string }) {
+function Hero({ tab, role, title, tagline }: { tab: Tab; role: string; title: string; tagline?: string }) {
   return (
     <div className="pt-12 pb-16">
       {/* 이름 앞에 탭 색으로 직업을 붙여 씀 (음악 탭과 같은 크기) */}
@@ -47,7 +45,6 @@ function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; ti
         </h1>
         <p className="text-stone-500">{tagline}</p>
       </div>
-      <p className="mt-8 leading-relaxed max-w-prose">{about}</p>
     </div>
   );
 }
