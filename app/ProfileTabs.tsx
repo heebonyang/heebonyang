@@ -97,8 +97,8 @@ export default function ProfileTabs() {
     if (hash === "dental" || hash === "lounge") setTab(hash);
   }, []);
 
-  // 음악 탭은 앨범 커버 그리드를 위해 더 넓게 씀
-  const width = tab === "music" ? "max-w-5xl" : "max-w-3xl";
+  // 모든 탭이 같은 폭을 씀
+  const width = "max-w-5xl";
 
   const select = (next: Tab) => {
     setTab(next);
