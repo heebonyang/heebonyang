@@ -8,10 +8,11 @@ import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
 import { Cover } from "../MusicPanel";
 import { RELEASES, type Release, type Team } from "../music";
 import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
+import { loadSettings, SETTINGS_DOC, type SiteSettings } from "../siteSettings";
 
-type Section = "releases" | "teams" | "notices" | "guestbook";
+type Section = "headings" | "releases" | "teams" | "notices" | "guestbook";
 
-const SECTION_LABELS: Record<Section, string> = { releases: "음원", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
+const SECTION_LABELS: Record<Section, string> = { headings: "머리글", releases: "음원", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
 
 const RELEASE_TYPES: Release["type"][] = ["싱글", "EP", "정규"];
 
@@ -373,6 +374,72 @@ function NoticeEditor({
   );
 }
 
+// 각 탭 이름 옆에 보이는 한 줄 소개 (예: 일상의 이야기를 노래로 만듭니다.)
+function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
+  const [draft, setDraft] = useState<SiteSettings | null>(null);
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    loadSettings({ fresh: true }).then(setDraft);
+  }, []);
+
+  if (!draft) return <p className="mt-8 text-stone-400">불러오는 중…</p>;
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("saving");
+    try {
+      await setDoc(
+        doc(fb.db, ...SETTINGS_DOC),
+        { musicTagline: draft.musicTagline.trim(), dentalTagline: draft.dentalTagline.trim() },
+        { merge: true },
+      );
+      setStatus("saved");
+    } catch (err) {
+      setError(errorMessage(err));
+      setStatus("error");
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+      <p className="text-sm text-stone-500">각 탭 맨 위, 이름 옆에 보이는 한 줄 소개예요. 비워 두면 표시되지 않아요.</p>
+      <Field label="음악 탭" hint="싱어송라이터 양희본 옆">
+        <input
+          id="heading-music"
+          value={draft.musicTagline}
+          onChange={(e) => {
+            setDraft({ ...draft, musicTagline: e.target.value });
+            setStatus("idle");
+          }}
+          maxLength={80}
+          className={inputClass}
+        />
+      </Field>
+      <Field label="치과 탭" hint="치과의사 양희본 옆">
+        <input
+          id="heading-dental"
+          value={draft.dentalTagline}
+          onChange={(e) => {
+            setDraft({ ...draft, dentalTagline: e.target.value });
+            setStatus("idle");
+          }}
+          maxLength={80}
+          className={inputClass}
+        />
+      </Field>
+      <div className="flex items-center justify-end gap-4">
+        {status === "saved" && <span className="text-sm text-stone-600">저장했어요. 사이트에 바로 반영돼요.</span>}
+        {status === "error" && <span className="text-sm text-red-700">{error}</span>}
+        <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+          {status === "saving" ? "저장 중…" : "저장"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 // 삭제처럼 되돌릴 수 없는 동작은 한 번 더 눌러야 실행되게 함 (브라우저 확인창 대신)
 function ConfirmButton({ label, onConfirm }: { label: string; onConfirm: () => Promise<void> }) {
   const [armed, setArmed] = useState(false);
@@ -701,6 +768,8 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
           </ul>
         </div>
       )}
+
+      {section === "headings" && <HeadingsEditor fb={fb} />}
 
       {section === "guestbook" && (
         <ul className="mt-8 divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">

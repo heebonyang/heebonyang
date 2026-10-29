@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import MusicPanel from "./MusicPanel";
 import Lounge from "./Lounge";
 import SocialLinks from "./SocialLinks";
+import { useSiteSettings } from "./siteSettings";
 
 // ── 치과 탭 내용 (음악 탭 내용은 app/music.ts) ──────────────────────
 // 음악과 치과는 서로 완전히 분리된 탭으로, 내용이 섞이지 않습니다.
@@ -11,7 +12,6 @@ const NAME_EN = "Heebon Yang";
 const DENTAL = {
   role: "치과의사",
   title: "양희본",
-  tagline: "환자의 이야기를 먼저 듣는 진료를 합니다.",
   about:
     "충분히 설명하고, 꼭 필요한 치료만 권합니다. 치료가 끝난 뒤에도 편하게 다시 찾을 수 있는 치과를 지향합니다.",
   items: [
@@ -36,7 +36,8 @@ const THEME = {
   lounge: { role: "text-stone-600", eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
 };
 
-function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; title: string; tagline: string; about: string }) {
+// tagline(머리글)은 관리자 페이지 '머리글'에서 수정
+function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; title: string; tagline?: string; about: string }) {
   return (
     <div className="pt-12 pb-16">
       {/* 이름 앞에 탭 색으로 직업을 붙여 씀 (음악 탭과 같은 크기) */}
@@ -62,9 +63,10 @@ function Section({ tab, eyebrow, title, children }: { tab: Tab; eyebrow: string;
 }
 
 function DentalPanel() {
+  const settings = useSiteSettings();
   return (
     <>
-      <Hero tab="dental" {...DENTAL} />
+      <Hero tab="dental" {...DENTAL} tagline={settings?.dentalTagline} />
       <Section tab="dental" eyebrow="Clinic" title="진료 안내">
         <dl className="grid gap-4 sm:grid-cols-3">
           {DENTAL.items.map((item) => (

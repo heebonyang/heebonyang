@@ -20,6 +20,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // 각 탭 머리글 같은 사이트 문구
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /notices/{id} {
       allow read: if true;
       allow write: if isAdmin();

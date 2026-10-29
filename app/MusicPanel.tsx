@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MUSIC_PROFILE, type Release, type Team } from "./music";
 import { useMusicData } from "./musicData";
 import AlbumBanner from "./AlbumBanner";
+import { useSiteSettings } from "./siteSettings";
 
 type Category = "solo" | "team";
 
@@ -210,6 +211,7 @@ function Discography({
 
 export default function MusicPanel() {
   const data = useMusicData();
+  const settings = useSiteSettings();
   const [chosen, setChosen] = useState<number | null>(null);
 
   const choose = (i: number) => {
@@ -228,7 +230,7 @@ export default function MusicPanel() {
         <h1 className="text-2xl font-bold text-stone-900">
           <span className="text-amber-700">싱어송라이터</span> {MUSIC_PROFILE.name}
         </h1>
-        <p className="text-stone-500">{MUSIC_PROFILE.tagline}</p>
+        <p className="text-stone-500">{settings?.musicTagline}</p>
       </div>
 
       <AlbumBanner />
