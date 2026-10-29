@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 페이지 길이에 따라 스크롤바가 생겼다 사라지며 탭마다 폭이 달라 보이지 않도록 자리를 항상 확보 */
+html {
+  scrollbar-gutter: stable;
+}
