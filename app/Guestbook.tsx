@@ -124,24 +124,27 @@ export function formatDate(ts: Timestamp | null) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// 이름 색: 글마다 무작위로 정하되, 새로고침해도 같은 글은 같은 색 (글 번호로 정함)
+// 이름 색: 무지개 7색(빨주노초파남보) 중 글 번호로 무작위 선택. 새로고침해도 같은 글은 같은 색
 const NAME_COLORS = [
-  "text-rose-600",
-  "text-orange-600",
-  "text-amber-700",
-  "text-lime-700",
-  "text-emerald-700",
-  "text-teal-700",
-  "text-sky-700",
-  "text-indigo-600",
-  "text-violet-700",
-  "text-fuchsia-700",
+  "text-red-600",
+  "text-orange-500",
+  "text-yellow-600",
+  "text-green-600",
+  "text-blue-600",
+  "text-indigo-700",
+  "text-violet-600",
 ];
 
+// 색을 다시 섞고 싶으면 이 숫자만 바꾸면 됨
+const COLOR_SEED = 12;
+
 function nameColor(postId: string) {
-  let h = 0;
-  for (const ch of postId) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return NAME_COLORS[h % NAME_COLORS.length];
+  let x = COLOR_SEED;
+  for (let i = 0; i < postId.length; i++) x = Math.imul(x ^ postId.charCodeAt(i), 0x01000193) >>> 0;
+  x ^= x >>> 16;
+  x = Math.imul(x, 0x45d9f3b) >>> 0;
+  x ^= x >>> 16;
+  return NAME_COLORS[(x >>> 0) % NAME_COLORS.length];
 }
 
 export default function Guestbook() {
