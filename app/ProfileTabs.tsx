@@ -10,7 +10,7 @@ const NAME_EN = "Heebon Yang";
 
 const DENTAL = {
   role: "치과의사",
-  title: "양희본 원장",
+  title: "양희본",
   tagline: "환자의 이야기를 먼저 듣는 진료를 합니다.",
   about:
     "충분히 설명하고, 꼭 필요한 치료만 권합니다. 치료가 끝난 뒤에도 편하게 다시 찾을 수 있는 치과를 지향합니다.",
@@ -38,12 +38,14 @@ const THEME = {
 
 function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; title: string; tagline: string; about: string }) {
   return (
-    <div className="py-20">
-      {/* 이름 앞에 탭 색으로 직업을 붙여 씀 (예: 치과의사 양희본 원장) */}
-      <h1 className="text-4xl sm:text-5xl font-bold text-stone-900 text-balance">
-        <span className={THEME[tab].role}>{role}</span> {title}
-      </h1>
-      <p className="mt-4 text-xl text-stone-600">{tagline}</p>
+    <div className="pt-12 pb-16">
+      {/* 이름 앞에 탭 색으로 직업을 붙여 씀 (음악 탭과 같은 크기) */}
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <h1 className="text-2xl font-bold text-stone-900">
+          <span className={THEME[tab].role}>{role}</span> {title}
+        </h1>
+        <p className="text-stone-500">{tagline}</p>
+      </div>
       <p className="mt-8 leading-relaxed max-w-prose">{about}</p>
     </div>
   );
