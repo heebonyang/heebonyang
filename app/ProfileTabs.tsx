@@ -31,16 +31,18 @@ type Tab = "music" | "dental" | "lounge";
 const TAB_LABELS: Record<Tab, string> = { music: "음악", dental: "치과", lounge: "라운지" };
 
 const THEME = {
-  music:  { tag: "bg-amber-100 text-amber-800", eyebrow: "text-amber-700", active: "bg-amber-700 text-white" },
-  dental: { tag: "bg-sky-100 text-sky-800",     eyebrow: "text-sky-700",   active: "bg-sky-700 text-white" },
-  lounge: { tag: "bg-stone-200 text-stone-800", eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
+  music:  { role: "text-amber-700", eyebrow: "text-amber-700", active: "bg-amber-700 text-white" },
+  dental: { role: "text-sky-700",   eyebrow: "text-sky-700",   active: "bg-sky-700 text-white" },
+  lounge: { role: "text-stone-600", eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
 };
 
 function Hero({ tab, role, title, tagline, about }: { tab: Tab; role: string; title: string; tagline: string; about: string }) {
   return (
     <div className="py-20">
-      <span className={`px-3 py-1 rounded-full text-sm ${THEME[tab].tag}`}>{role}</span>
-      <h1 className="mt-6 text-4xl sm:text-5xl font-bold text-stone-900">{title}</h1>
+      {/* 이름 앞에 탭 색으로 직업을 붙여 씀 (예: 치과의사 양희본 원장) */}
+      <h1 className="text-4xl sm:text-5xl font-bold text-stone-900 text-balance">
+        <span className={THEME[tab].role}>{role}</span> {title}
+      </h1>
       <p className="mt-4 text-xl text-stone-600">{tagline}</p>
       <p className="mt-8 leading-relaxed max-w-prose">{about}</p>
     </div>

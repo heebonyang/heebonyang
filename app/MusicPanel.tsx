@@ -225,7 +225,9 @@ export default function MusicPanel() {
   return (
     <>
       <div className="pt-12 pb-10 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <h1 className="text-2xl font-bold text-stone-900">{MUSIC_PROFILE.name}</h1>
+        <h1 className="text-2xl font-bold text-stone-900">
+          <span className="text-amber-700">싱어송라이터</span> {MUSIC_PROFILE.name}
+        </h1>
         <p className="text-stone-500">{MUSIC_PROFILE.tagline}</p>
       </div>
 
