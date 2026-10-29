@@ -64,11 +64,12 @@ export default function Lounge() {
   const [board, setBoard] = useState<Board>("notices");
 
   return (
-    <div className="py-16">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-stone-900">라운지</h1>
-          <p className="mt-2 text-stone-500">소식을 전하고, 이야기를 나누는 곳이에요.</p>
+    <div className="pt-12 pb-16">
+      {/* 음악·치과 탭과 같은 크기와 배치 */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <h1 className="text-2xl font-bold text-stone-900">라운지</h1>
+          <p className="text-stone-500">소식을 전하고, 이야기를 나누는 곳이에요.</p>
         </div>
         <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
           {(Object.keys(BOARD_LABELS) as Board[]).map((b) => (
