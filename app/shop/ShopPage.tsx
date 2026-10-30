@@ -1,7 +1,7 @@
 "use client";
 import SocialLinks from "../SocialLinks";
 import { ALBUM0, formatWon } from "../shop";
-import LimitedStock from "../LimitedStock";
+import LimitedStock, { useAlbumStock } from "../LimitedStock";
 
 function BankAccount() {
   const { name, account, holder } = ALBUM0.bank;
@@ -13,7 +13,8 @@ function BankAccount() {
 }
 
 export default function ShopPage() {
-  const soldOut = ALBUM0.stock <= 0;
+  const numbers = useAlbumStock();
+  const soldOut = numbers !== null && numbers.stock <= 0;
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-700">

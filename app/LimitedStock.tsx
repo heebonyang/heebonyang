@@ -1,8 +1,17 @@
-import { ALBUM0 } from "./shop";
+import { useSiteSettings } from "./siteSettings";
+
+// 0집 남은 수량 (불러오기 전에는 null). 관리자 페이지 '0집 CD'에서 정한 숫자
+export function useAlbumStock() {
+  const settings = useSiteSettings();
+  return settings ? { stock: settings.albumStock, total: settings.albumTotal } : null;
+}
 
 // 한정판 남은 수량 게이지: "남은 369 / 500장" + 막대
 export default function LimitedStock({ size = "md" }: { size?: "sm" | "md" }) {
-  const { stock, total } = ALBUM0;
+  const numbers = useAlbumStock();
+  // 숫자를 불러오는 동안에는 같은 높이의 빈 자리만 둠 (예전 숫자가 잠깐 보이지 않도록)
+  if (!numbers) return <div className={size === "md" ? "h-[60px]" : "h-[52px]"} aria-hidden />;
+  const { stock, total } = numbers;
   const left = Math.max(0, Math.min(stock, total));
   const percent = total > 0 ? (left / total) * 100 : 0;
   const soldOut = left === 0;

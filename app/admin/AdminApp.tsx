@@ -10,9 +10,9 @@ import { RELEASES, type Release, type Team } from "../music";
 import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
 import { loadSettings, SETTINGS_DOC, type MusicLink, type SiteSettings } from "../siteSettings";
 
-type Section = "headings" | "links" | "releases" | "teams" | "notices" | "guestbook";
+type Section = "headings" | "links" | "album" | "releases" | "teams" | "notices" | "guestbook";
 
-const SECTION_LABELS: Record<Section, string> = { headings: "머리글", links: "링크", releases: "음원", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
+const SECTION_LABELS: Record<Section, string> = { headings: "머리글", links: "링크", album: "0집 CD", releases: "음원", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
 
 const RELEASE_TYPES: Release["type"][] = ["싱글", "EP", "정규"];
 
@@ -433,6 +433,102 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
         {status === "saved" && <span className="text-sm text-stone-600">저장했어요. 사이트에 바로 반영돼요.</span>}
         {status === "error" && <span className="text-sm text-red-700">{error}</span>}
         <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+          {status === "saving" ? "저장 중…" : "저장"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// 0집 CD 남은 수량 / 전체 수량. 첫 화면과 구매 페이지의 게이지에 바로 반영됨
+function AlbumStockEditor({ fb }: { fb: FirebaseServices }) {
+  const [stock, setStock] = useState<string | null>(null);
+  const [total, setTotal] = useState("");
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    loadSettings({ fresh: true }).then((s) => {
+      setStock(String(s.albumStock));
+      setTotal(String(s.albumTotal));
+    });
+  }, []);
+
+  if (stock === null) return <p className="mt-8 text-stone-400">불러오는 중…</p>;
+
+  const stockNum = Number(stock);
+  const totalNum = Number(total);
+  const valid =
+    Number.isInteger(stockNum) && Number.isInteger(totalNum) && stockNum >= 0 && totalNum > 0 && stockNum <= totalNum;
+
+  const change = (value: string) => {
+    setStock(value);
+    setStatus("idle");
+  };
+  const step = (delta: number) => change(String(Math.max(0, Math.min(totalNum || Infinity, (Number(stock) || 0) + delta))));
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!valid) return;
+    setStatus("saving");
+    try {
+      await setDoc(doc(fb.db, ...SETTINGS_DOC), { albumStock: stockNum, albumTotal: totalNum }, { merge: true });
+      loadSettings({ fresh: true });
+      setStatus("saved");
+    } catch (err) {
+      setError(errorMessage(err));
+      setStatus("error");
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+      <p className="text-sm text-stone-500">첫 화면과 구매 페이지의 &lsquo;남은 수량&rsquo; 게이지에 바로 반영돼요. 0이 되면 품절로 표시돼요.</p>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="남은 수량" hint="장">
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => step(-10)} className="px-2.5 py-2 rounded-lg border border-stone-300 text-sm tabular-nums">
+              −10
+            </button>
+            <button type="button" onClick={() => step(-1)} className="px-3 py-2 rounded-lg border border-stone-300 text-sm">
+              −1
+            </button>
+            <input
+              id="album-stock"
+              type="number"
+              min={0}
+              value={stock}
+              onChange={(e) => change(e.target.value)}
+              className={`${inputClass} text-center text-lg font-semibold tabular-nums`}
+            />
+            <button type="button" onClick={() => step(1)} className="px-3 py-2 rounded-lg border border-stone-300 text-sm">
+              +1
+            </button>
+          </div>
+        </Field>
+        <Field label="전체 수량 (한정판)" hint="장">
+          <input
+            id="album-total"
+            type="number"
+            min={1}
+            value={total}
+            onChange={(e) => {
+              setTotal(e.target.value);
+              setStatus("idle");
+            }}
+            className={`${inputClass} tabular-nums`}
+          />
+        </Field>
+      </div>
+      {!valid && <p className="text-sm text-red-700">남은 수량은 0 이상, 전체 수량 이하의 정수로 입력해 주세요.</p>}
+      <div className="flex items-center justify-end gap-4">
+        {status === "saved" && <span className="text-sm text-stone-600">저장했어요. 사이트에 바로 반영돼요.</span>}
+        {status === "error" && <span className="text-sm text-red-700">{error}</span>}
+        <button
+          type="submit"
+          disabled={!valid || status === "saving"}
+          className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50"
+        >
           {status === "saving" ? "저장 중…" : "저장"}
         </button>
       </div>
@@ -995,6 +1091,8 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
       {section === "headings" && <HeadingsEditor fb={fb} />}
 
       {section === "links" && <LinksManager fb={fb} />}
+
+      {section === "album" && <AlbumStockEditor fb={fb} />}
 
       {section === "guestbook" && (
         <ul className="mt-8 divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">

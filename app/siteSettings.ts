@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore/lite";
 import { getFirebase } from "./firebase";
+import { ALBUM0 } from "./shop";
 
 // 관리자 페이지 '머리글'에서 고치는 문구. 데이터베이스에 값이 없으면 아래 기본값을 씀
 // 음악 탭 머리글 오른쪽에 보이는 바로가기 (관리자 페이지 '링크'에서 관리)
@@ -16,6 +17,9 @@ export type SiteSettings = {
   musicTagline: string;
   dentalTagline: string;
   musicLinks: MusicLink[];
+  // 0집 CD 남은 수량 / 전체 수량 (관리자 페이지 '0집 CD'에서 관리)
+  albumStock: number;
+  albumTotal: number;
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
@@ -23,6 +27,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   dentalTagline: "환자의 이야기를 먼저 듣는 진료를 합니다.",
   // 관리자 페이지에서 한 번도 저장하지 않았을 때 보여주는 기본 링크
   musicLinks: [{ name: "Melon", url: "https://www.melon.com/artist/timeline.htm?artistId=869278" }],
+  albumStock: ALBUM0.stock,
+  albumTotal: ALBUM0.total,
 };
 
 export const SETTINGS_DOC = ["settings", "site"] as const;

@@ -1,9 +1,11 @@
+"use client";
 import { ALBUM0, formatWon } from "./shop";
-import LimitedStock from "./LimitedStock";
+import LimitedStock, { useAlbumStock } from "./LimitedStock";
 
 // 음악 탭 맨 위에 보이는 0집 CD 판매 안내
 export default function AlbumBanner() {
-  const soldOut = ALBUM0.stock <= 0;
+  const numbers = useAlbumStock();
+  const soldOut = numbers !== null && numbers.stock <= 0;
   return (
     <section className="mt-2 mb-14 grid gap-6 sm:grid-cols-[180px_1fr] sm:gap-8 items-center rounded-2xl border border-stone-200 bg-white p-5 sm:p-6">
       <a href="/shop" className="block overflow-hidden rounded-xl bg-black">
