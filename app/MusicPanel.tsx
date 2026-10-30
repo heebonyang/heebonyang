@@ -99,17 +99,18 @@ function Featured({ release, index, isLatest }: { release: Release; index: numbe
   );
 }
 
-// 멜론 아티스트 페이지 링크: 평소엔 회색, 마우스를 올리면 멜론 초록색 (상단 유튜브·인스타그램 아이콘과 같은 방식)
+// 멜론 아티스트 페이지 링크: 멜론 로고(동그라미 + melon 글자). 평소엔 회색, 마우스를 올리면 멜론 초록색
 function MelonLink() {
   return (
     <a
       href={MUSIC_PROFILE.melon}
       target="_blank"
       rel="noreferrer"
-      aria-label="멜론 아티스트 페이지에서 듣기"
-      className="group ml-auto inline-flex items-center gap-2 rounded-full border border-stone-300 bg-white pl-1.5 pr-4 py-1.5 text-sm font-medium text-stone-700 transition-colors hover:border-[#00cd3c] hover:text-[#00b336]"
+      aria-label="멜론 아티스트 페이지"
+      title="Melon"
+      className="ml-auto inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-stone-500 transition-colors hover:bg-white hover:text-[#00cd3c]"
     >
-      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden className="text-stone-400 transition-colors group-hover:text-[#00cd3c]">
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden>
         <circle cx="12" cy="12" r="11" fill="currentColor" />
         <path
           d="M7 15.5V9.2c0-.5.6-.8 1-.4l2.6 2.6c.2.2.6.2.8 0l2.6-2.6c.4-.4 1-.1 1 .4v6.3"
@@ -120,7 +121,7 @@ function MelonLink() {
           strokeLinejoin="round"
         />
       </svg>
-      멜론에서 듣기
+      <span className="text-xl font-extrabold tracking-tight leading-none">melon</span>
     </a>
   );
 }
