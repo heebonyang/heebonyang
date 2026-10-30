@@ -3,7 +3,7 @@ import { useState } from "react";
 import { MUSIC_PROFILE, type Release, type Team } from "./music";
 import { useMusicData } from "./musicData";
 import AlbumBanner from "./AlbumBanner";
-import { useSiteSettings } from "./siteSettings";
+import { useSiteSettings, type MusicLink } from "./siteSettings";
 
 type Category = "solo" | "team";
 
@@ -99,17 +99,10 @@ function Featured({ release, index, isLatest }: { release: Release; index: numbe
   );
 }
 
-// 멜론 아티스트 페이지 링크: 멜론 로고(동그라미 + melon 글자). 평소엔 회색, 마우스를 올리면 멜론 초록색
-function MelonLink() {
+// 로고 이미지가 없는 멜론 기본 링크용 그림 (동그라미 + melon 글자)
+function MelonMark() {
   return (
-    <a
-      href={MUSIC_PROFILE.melon}
-      target="_blank"
-      rel="noreferrer"
-      aria-label="멜론 아티스트 페이지"
-      title="Melon"
-      className="ml-auto inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-stone-500 transition-colors hover:bg-white hover:text-[#00cd3c]"
-    >
+    <>
       <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden>
         <circle cx="12" cy="12" r="11" fill="currentColor" />
         <path
@@ -122,7 +115,43 @@ function MelonLink() {
         />
       </svg>
       <span className="text-xl font-extrabold tracking-tight leading-none">melon</span>
-    </a>
+    </>
+  );
+}
+
+// 음악 탭 머리글 오른쪽 바로가기 (관리자 페이지 '링크'에서 관리)
+// 평소엔 회색, 마우스를 올리면 원래 색 (상단 유튜브·인스타그램 아이콘과 같은 방식)
+function MusicLinks({ links }: { links: MusicLink[] }) {
+  if (links.length === 0) return null;
+  return (
+    <div className="ml-auto flex flex-wrap items-center gap-2">
+      {links.map((link) => (
+        <a
+          key={link.name + link.url}
+          href={link.url}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={link.name}
+          title={link.name}
+          className={`group inline-flex items-center gap-1.5 rounded-full px-2 py-1 transition-colors hover:bg-white ${
+            link.logo ? "" : link.name.toLowerCase() === "melon" ? "text-stone-500 hover:text-[#00cd3c]" : "text-stone-500 hover:text-stone-900"
+          }`}
+        >
+          {link.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={link.logo}
+              alt={link.name}
+              className="h-7 w-auto grayscale opacity-60 transition group-hover:grayscale-0 group-hover:opacity-100"
+            />
+          ) : link.name.toLowerCase() === "melon" ? (
+            <MelonMark />
+          ) : (
+            <span className="text-lg font-bold">{link.name}</span>
+          )}
+        </a>
+      ))}
+    </div>
   );
 }
 
@@ -258,7 +287,7 @@ export default function MusicPanel() {
           <span className="text-amber-700">싱어송라이터</span> {MUSIC_PROFILE.name}
         </h1>
         <p className="text-stone-500">{settings?.musicTagline}</p>
-        <MelonLink />
+        {settings && <MusicLinks links={settings.musicLinks} />}
       </div>
 
       <AlbumBanner />

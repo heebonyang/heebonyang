@@ -4,14 +4,25 @@ import { doc, getDoc } from "firebase/firestore/lite";
 import { getFirebase } from "./firebase";
 
 // 관리자 페이지 '머리글'에서 고치는 문구. 데이터베이스에 값이 없으면 아래 기본값을 씀
+// 음악 탭 머리글 오른쪽에 보이는 바로가기 (관리자 페이지 '링크'에서 관리)
+// logo: PNG 이미지 (data URL). 없으면 이름 글자로 표시
+export type MusicLink = {
+  name: string;
+  url: string;
+  logo?: string;
+};
+
 export type SiteSettings = {
   musicTagline: string;
   dentalTagline: string;
+  musicLinks: MusicLink[];
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   musicTagline: "일상의 이야기를 노래로 만듭니다.",
   dentalTagline: "환자의 이야기를 먼저 듣는 진료를 합니다.",
+  // 관리자 페이지에서 한 번도 저장하지 않았을 때 보여주는 기본 링크
+  musicLinks: [{ name: "Melon", url: "https://www.melon.com/artist/timeline.htm?artistId=869278" }],
 };
 
 export const SETTINGS_DOC = ["settings", "site"] as const;

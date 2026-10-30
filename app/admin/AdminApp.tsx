@@ -8,11 +8,11 @@ import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
 import { Cover } from "../MusicPanel";
 import { RELEASES, type Release, type Team } from "../music";
 import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
-import { loadSettings, SETTINGS_DOC, type SiteSettings } from "../siteSettings";
+import { loadSettings, SETTINGS_DOC, type MusicLink, type SiteSettings } from "../siteSettings";
 
-type Section = "headings" | "releases" | "teams" | "notices" | "guestbook";
+type Section = "headings" | "links" | "releases" | "teams" | "notices" | "guestbook";
 
-const SECTION_LABELS: Record<Section, string> = { headings: "머리글", releases: "음원", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
+const SECTION_LABELS: Record<Section, string> = { headings: "머리글", links: "링크", releases: "음원", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
 
 const RELEASE_TYPES: Release["type"][] = ["싱글", "EP", "정규"];
 
@@ -440,6 +440,229 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
   );
 }
 
+// 로고는 높이 최대 120px PNG로 줄여서 저장 (투명 배경 유지)
+const LOGO_HEIGHT = 120;
+
+function resizeLogo(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, LOGO_HEIGHT / img.height);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(img.src);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => reject(new Error("이미지를 읽지 못했어요."));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+const emptyLink = (): MusicLink => ({ name: "", url: "" });
+
+function LinkEditor({
+  initial,
+  onSave,
+  onCancel,
+}: {
+  initial: MusicLink;
+  onSave: (link: MusicLink) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [draft, setDraft] = useState<MusicLink>(initial);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const pickLogo = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      setDraft((d) => ({ ...d, logo: undefined }));
+      const logo = await resizeLogo(file);
+      setDraft((d) => ({ ...d, logo }));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      await onSave({ ...draft, name: draft.name.trim(), url: draft.url.trim() });
+    } catch (err) {
+      setError(errorMessage(err));
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-6">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="이름" hint="예: Melon, Spotify">
+          <input id="link-name" required value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={inputClass} />
+        </Field>
+        <Field label="링크 주소">
+          <input
+            id="link-url"
+            type="url"
+            required
+            value={draft.url}
+            onChange={(e) => setDraft({ ...draft, url: e.target.value })}
+            placeholder="https://"
+            className={inputClass}
+          />
+        </Field>
+      </div>
+      <div className="grid gap-2">
+        <span className="text-sm text-stone-600">
+          로고 이미지 <span className="ml-2 text-stone-400">선택 · 투명 배경 PNG 추천. 없으면 이름 글자로 표시돼요</span>
+        </span>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="grid place-items-center h-16 min-w-32 rounded-xl border border-dashed border-stone-300 bg-stone-50 px-4">
+            {draft.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={draft.logo} alt="로고 미리보기" className="h-8 w-auto" />
+            ) : (
+              <span className="text-sm text-stone-400">로고 없음</span>
+            )}
+          </div>
+          <label className="text-sm px-4 py-2 rounded-lg border border-stone-300 cursor-pointer hover:border-stone-900">
+            {draft.logo ? "다른 이미지로 바꾸기" : "이미지 선택"}
+            <input
+              id="link-logo"
+              type="file"
+              accept="image/png,image/*"
+              className="sr-only"
+              onChange={(e) => pickLogo(e.target.files?.[0])}
+            />
+          </label>
+          {draft.logo && (
+            <button type="button" onClick={() => setDraft({ ...draft, logo: undefined })} className="text-sm text-stone-500 hover:text-red-700">
+              로고 지우기
+            </button>
+          )}
+        </div>
+      </div>
+      {error && <p className="text-sm text-red-700">{error}</p>}
+      <div className="flex justify-end gap-2">
+        <button type="button" onClick={onCancel} className="px-4 py-2 rounded-full border border-stone-300 text-sm">
+          취소
+        </button>
+        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+          {saving ? "저장 중…" : "저장"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// 음악 탭 머리글 오른쪽 바로가기 관리 (멜론 등). 목록 전체를 settings/site 문서에 저장
+function LinksManager({ fb }: { fb: FirebaseServices }) {
+  const [links, setLinks] = useState<MusicLink[] | null>(null);
+  const [editing, setEditing] = useState<{ index: number | null; value: MusicLink } | null>(null);
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    loadSettings({ fresh: true }).then((s) => setLinks(s.musicLinks));
+  }, []);
+
+  const saveAll = async (next: MusicLink[], message: string) => {
+    // undefined 값은 저장할 수 없어서 로고가 없으면 필드를 빼고 저장
+    const clean = next.map(({ name, url, logo }) => (logo ? { name, url, logo } : { name, url }));
+    await setDoc(doc(fb.db, ...SETTINGS_DOC), { musicLinks: clean }, { merge: true });
+    setLinks(clean);
+    setEditing(null);
+    setNotice(message);
+    loadSettings({ fresh: true });
+  };
+
+  if (!links) return <p className="mt-8 text-stone-400">불러오는 중…</p>;
+
+  const move = (i: number, delta: -1 | 1) => {
+    const j = i + delta;
+    if (j < 0 || j >= links.length) return;
+    const next = [...links];
+    [next[i], next[j]] = [next[j], next[i]];
+    saveAll(next, "순서를 바꿨어요.").catch((e) => setNotice(errorMessage(e)));
+  };
+
+  return (
+    <div className="mt-8 grid gap-6">
+      <p className="text-sm text-stone-500">
+        음악 탭 &lsquo;싱어송라이터 양희본&rsquo; 줄 오른쪽에 보이는 로고 링크예요. 평소엔 회색이고, 마우스를 올리면 원래 색으로 보여요.
+      </p>
+      {notice && <p className="rounded-lg bg-stone-100 px-4 py-3 text-sm text-stone-700">{notice}</p>}
+      {editing ? (
+        <LinkEditor
+          key={editing.index ?? "new"}
+          initial={editing.value}
+          onCancel={() => setEditing(null)}
+          onSave={(link) => {
+            const next = [...links];
+            if (editing.index === null) next.push(link);
+            else next[editing.index] = link;
+            return saveAll(next, `'${link.name}' 링크를 저장했어요.`);
+          }}
+        />
+      ) : (
+        <button
+          onClick={() => setEditing({ index: null, value: emptyLink() })}
+          className="w-fit px-5 py-2 rounded-full bg-stone-900 text-white text-sm"
+        >
+          + 새 링크 추가
+        </button>
+      )}
+      <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+        {links.length === 0 && <li className="p-5 text-stone-500">링크가 없어요. 음악 탭에도 표시되지 않아요.</li>}
+        {links.map((link, i) => (
+          <li key={i} className="flex items-center gap-4 p-4">
+            <div className="flex flex-col">
+              <button onClick={() => move(i, -1)} disabled={i === 0} aria-label={`${link.name} 앞으로`} className="px-2 text-stone-500 hover:text-stone-900 disabled:opacity-25">
+                ▲
+              </button>
+              <button
+                onClick={() => move(i, 1)}
+                disabled={i === links.length - 1}
+                aria-label={`${link.name} 뒤로`}
+                className="px-2 text-stone-500 hover:text-stone-900 disabled:opacity-25"
+              >
+                ▼
+              </button>
+            </div>
+            <div className="grid place-items-center h-12 w-24 shrink-0 rounded-lg bg-stone-50">
+              {link.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={link.logo} alt={link.name} className="h-7 w-auto" />
+              ) : (
+                <span className="text-xs text-stone-400">로고 없음</span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-stone-900">{link.name}</p>
+              <p className="text-sm text-stone-500 truncate">{link.url}</p>
+            </div>
+            <button onClick={() => setEditing({ index: i, value: link })} className="text-sm text-stone-700 hover:underline">
+              수정
+            </button>
+            <ConfirmButton
+              label="삭제"
+              onConfirm={() =>
+                saveAll(
+                  links.filter((_, k) => k !== i),
+                  `'${link.name}' 링크를 삭제했어요.`,
+                ).catch((e) => setNotice(errorMessage(e)))
+              }
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 // 삭제처럼 되돌릴 수 없는 동작은 한 번 더 눌러야 실행되게 함 (브라우저 확인창 대신)
 function ConfirmButton({ label, onConfirm }: { label: string; onConfirm: () => Promise<void> }) {
   const [armed, setArmed] = useState(false);
@@ -770,6 +993,8 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
       )}
 
       {section === "headings" && <HeadingsEditor fb={fb} />}
+
+      {section === "links" && <LinksManager fb={fb} />}
 
       {section === "guestbook" && (
         <ul className="mt-8 divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
