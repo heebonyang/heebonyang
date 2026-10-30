@@ -109,20 +109,20 @@ export default function ProfileTabs() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-700">
       <header className="sticky top-0 z-10 bg-stone-50/90 backdrop-blur border-b border-stone-200">
-        <nav className={`${width} mx-auto px-4 h-16 flex items-center justify-between`}>
+        <nav className={`${width} mx-auto px-4 min-h-16 py-2 flex flex-wrap items-center justify-between gap-2`}>
           {/* 좁은 화면에서는 이름을 숨겨 SNS 아이콘과 탭이 한 줄에 들어가게 함 */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <span className="hidden sm:inline font-bold text-stone-900">{NAME_EN}</span>
             <SocialLinks />
           </div>
-          <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
+          <div role="tablist" className="ml-auto flex shrink-0 gap-0.5 sm:gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
             {(["music", "dental", "lounge"] as const).map((t) => (
               <button
                 key={t}
                 role="tab"
                 aria-selected={tab === t}
                 onClick={() => select(t)}
-                className={`px-3 sm:px-4 py-1.5 rounded-full ${tab === t ? THEME[t].active : "text-stone-500 hover:text-stone-900"}`}
+                className={`whitespace-nowrap px-2.5 sm:px-4 py-1.5 rounded-full ${tab === t ? THEME[t].active : "text-stone-500 hover:text-stone-900"}`}
               >
                 {TAB_LABELS[t]}
               </button>

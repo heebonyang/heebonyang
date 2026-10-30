@@ -6,3 +6,9 @@
 html {
   scrollbar-gutter: stable;
 }
+
+/* 한글이 글자 중간에서 줄바꿈되지 않도록 단어 단위로 줄바꿈 (긴 주소는 필요하면 끊음) */
+body {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
