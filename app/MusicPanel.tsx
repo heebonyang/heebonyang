@@ -310,11 +310,7 @@ export default function MusicPanel() {
         </>
       )}
 
-      <section className="py-14 border-t border-stone-200 grid gap-10 md:grid-cols-2">
-        <div>
-          <h2 className="text-xl font-bold text-stone-900">About</h2>
-          <p className="mt-4 leading-relaxed">{MUSIC_PROFILE.about}</p>
-        </div>
+      <section className="py-14 border-t border-stone-200">
         <div>
           <h2 className="text-xl font-bold text-stone-900">공연·협업 문의</h2>
           <a
