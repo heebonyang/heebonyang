@@ -4,6 +4,7 @@ export const MUSIC_PROFILE = {
   about:
     "어쿠스틱 기타 한 대로 시작한 노래들입니다. 직접 쓰고, 직접 부르고, 가끔 작은 무대에 섭니다.",
   email: "yhb5724@naver.com",
+  melon: "https://www.melon.com/artist/timeline.htm?artistId=869278",
 };
 
 // ── 아래 팀 프로젝트와 발매 음원 목록은 예시입니다 ─────────────────────
