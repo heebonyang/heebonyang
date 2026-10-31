@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import SocialLinks from "../SocialLinks";
 import { ALBUM0, formatWon } from "../shop";
 import LimitedStock, { useAlbumStock } from "../LimitedStock";
@@ -20,9 +21,9 @@ export default function ShopPage() {
     <div className="min-h-screen bg-stone-50 text-stone-700">
       <header className="border-b border-stone-200">
         <nav className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <a href="/" className="font-bold text-stone-900 hover:text-amber-700">
+          <Link href="/" className="font-bold text-stone-900 hover:text-amber-700">
             ← Heebon Yang
-          </a>
+          </Link>
           <SocialLinks />
         </nav>
       </header>

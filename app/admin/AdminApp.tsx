@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore/lite";
@@ -1146,9 +1147,9 @@ export default function AdminApp() {
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <span className="font-bold text-stone-900">관리자</span>
           <div className="flex items-center gap-4 text-sm">
-            <a href="/" className="text-stone-500 hover:text-stone-900">
+            <Link href="/" className="text-stone-500 hover:text-stone-900">
               사이트 보기
-            </a>
+            </Link>
             {fb && user && (
               <button onClick={() => signOut(getAuth(fb.app))} className="text-stone-500 hover:text-stone-900">
                 로그아웃
