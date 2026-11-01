@@ -32,7 +32,7 @@ const LINKS = [
 
 export default function SocialLinks() {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center sm:gap-1">
       {LINKS.map(({ href, label, Icon, hover }) => (
         <a
           key={label}
@@ -41,7 +41,7 @@ export default function SocialLinks() {
           rel="noreferrer"
           aria-label={`${label}에서 보기`}
           title={label}
-          className={`grid place-items-center w-9 h-9 rounded-full text-stone-700 hover:bg-white transition-colors ${hover}`}
+          className={`grid place-items-center w-8 h-8 sm:w-9 sm:h-9 rounded-full text-stone-700 hover:bg-white transition-colors ${hover}`}
         >
           <Icon />
         </a>
