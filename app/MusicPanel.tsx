@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MUSIC_PROFILE, type Release, type Team } from "./music";
 import { useMusicData } from "./musicData";
 import AlbumBanner from "./AlbumBanner";
+import RolePill from "./RolePill";
 import { useSiteSettings, type MusicLink } from "./siteSettings";
 
 type Category = "solo" | "team";
@@ -283,9 +284,10 @@ export default function MusicPanel() {
   return (
     <>
       <div className="pt-12 pb-10 flex flex-wrap items-center gap-x-4 gap-y-3">
-        <h1 className="text-2xl font-bold text-stone-900">
-          <span className="text-amber-700">싱어송라이터</span> {MUSIC_PROFILE.name}
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-stone-900">{MUSIC_PROFILE.name}</h1>
+          <RolePill color="amber">싱어송라이터</RolePill>
+        </div>
         <p className="text-stone-500">{settings?.musicTagline}</p>
         {settings && <MusicLinks links={settings.musicLinks} />}
       </div>

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import MusicPanel from "./MusicPanel";
 import Lounge from "./Lounge";
+import RolePill from "./RolePill";
 import SocialLinks from "./SocialLinks";
 import { useSiteSettings } from "./siteSettings";
 
@@ -29,20 +30,21 @@ type Tab = "music" | "dental" | "lounge";
 const TAB_LABELS: Record<Tab, string> = { music: "음악", dental: "치과", lounge: "라운지" };
 
 const THEME = {
-  music:  { role: "text-amber-700", eyebrow: "text-amber-700", active: "bg-amber-700 text-white" },
-  dental: { role: "text-sky-700",   eyebrow: "text-sky-700",   active: "bg-sky-700 text-white" },
-  lounge: { role: "text-stone-600", eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
+  music:  { eyebrow: "text-amber-700", active: "bg-amber-700 text-white" },
+  dental: { eyebrow: "text-sky-700",   active: "bg-sky-700 text-white" },
+  lounge: { eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
 };
 
 // tagline(머리글)은 관리자 페이지 '머리글'에서 수정
 function Hero({ tab, role, title, tagline }: { tab: Tab; role: string; title: string; tagline?: string }) {
   return (
     <div className="pt-12 pb-16">
-      {/* 이름 앞에 탭 색으로 직업을 붙여 씀 (음악 탭과 같은 크기) */}
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <h1 className="text-2xl font-bold text-stone-900">
-          <span className={THEME[tab].role}>{role}</span> {title}
-        </h1>
+      {/* 명함처럼 이름 옆에 탭 색 알약으로 직업 표시 (음악 탭과 같은 크기) */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-stone-900">{title}</h1>
+          <RolePill color={tab === "music" ? "amber" : "sky"}>{role}</RolePill>
+        </div>
         <p className="text-stone-500">{tagline}</p>
       </div>
     </div>
@@ -112,7 +114,7 @@ export default function ProfileTabs() {
         <nav className={`${width} mx-auto px-4 min-h-16 py-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1`}>
           {/* 휴대폰에서도 이름이 보이도록, 좁은 화면에서는 글자·아이콘·탭 간격을 조금 줄여 한 줄에 맞춤 */}
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <span className="text-sm sm:text-base font-bold text-stone-900 whitespace-nowrap">{NAME_EN}</span>
+            <span className="text-xs sm:text-sm font-semibold tracking-[0.1em] sm:tracking-[0.18em] uppercase text-stone-600 whitespace-nowrap">{NAME_EN}</span>
             <SocialLinks />
           </div>
           <div role="tablist" className="ml-auto flex shrink-0 sm:gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">

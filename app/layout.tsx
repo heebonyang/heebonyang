@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+// 명함과 같은 글꼴: 영문·숫자는 Inter, 한글은 Noto Sans KR
+const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
+const notoKr = Noto_Sans_KR({ subsets: ["latin"], weight: ["400", "500", "600", "700"], display: "swap", preload: false, variable: "--font-noto-kr" });
 
 export const metadata: Metadata = {
   title: "양희본 — 싱어송라이터 · 치과의사",
@@ -15,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={inter.className}>
+    <html lang="ko" className={`${inter.variable} ${notoKr.variable}`}>
       <body className="min-h-screen">{children}</body>
     </html>
   );

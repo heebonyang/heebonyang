@@ -21,7 +21,7 @@ export default function ShopPage() {
     <div className="min-h-screen bg-stone-50 text-stone-700">
       <header className="border-b border-stone-200">
         <nav className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <Link href="/" className="font-bold text-stone-900 hover:text-amber-700">
+          <Link href="/" className="text-sm font-semibold tracking-[0.18em] uppercase text-stone-600 hover:text-amber-700 whitespace-nowrap">
             ← Heebon Yang
           </Link>
           <SocialLinks />
