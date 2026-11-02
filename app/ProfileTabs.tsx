@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import MusicPanel from "./MusicPanel";
 import Lounge from "./Lounge";
@@ -114,7 +115,19 @@ export default function ProfileTabs() {
         <nav className={`${width} mx-auto px-4 min-h-16 py-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1`}>
           {/* 휴대폰에서도 이름이 보이도록, 좁은 화면에서는 글자·아이콘·탭 간격을 조금 줄여 한 줄에 맞춤 */}
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <span className="text-xs sm:text-sm font-semibold tracking-[0.1em] sm:tracking-[0.18em] uppercase text-stone-600 whitespace-nowrap">{NAME_EN}</span>
+            {/* 이름을 누르면 홈(음악 탭, 맨 위)으로 */}
+            <Link
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                setTab("music");
+                history.replaceState(null, "", "/");
+                window.scrollTo(0, 0);
+              }}
+              className="text-xs sm:text-sm font-semibold tracking-[0.1em] sm:tracking-[0.18em] uppercase text-stone-600 hover:text-stone-900 whitespace-nowrap"
+            >
+              {NAME_EN}
+            </Link>
             <SocialLinks />
           </div>
           <div role="tablist" className="ml-auto flex shrink-0 sm:gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
