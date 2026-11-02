@@ -31,9 +31,9 @@ type Tab = "music" | "dental" | "lounge";
 const TAB_LABELS: Record<Tab, string> = { music: "음악", dental: "치과", lounge: "라운지" };
 
 const THEME = {
-  music:  { eyebrow: "text-amber-700", active: "bg-amber-700 text-white" },
-  dental: { eyebrow: "text-sky-700",   active: "bg-sky-700 text-white" },
-  lounge: { eyebrow: "text-stone-600", active: "bg-stone-900 text-white" },
+  music:  { eyebrow: "text-brand-red",   active: "bg-brand-red text-white" },
+  dental: { eyebrow: "text-brand-blue",  active: "bg-brand-blue text-white" },
+  lounge: { eyebrow: "text-brand-green", active: "bg-brand-green text-white" },
 };
 
 // tagline(머리글)은 관리자 페이지 '머리글'에서 수정
