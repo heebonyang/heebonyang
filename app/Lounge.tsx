@@ -23,8 +23,6 @@ function Linkified({ text }: { text: string }) {
 }
 
 const BOARD_LABELS: Record<Board, string> = { notices: "공지", guestbook: "방명록" };
-// 공지는 짙은 파랑, 방명록은 초록 (썸네일 공방과 같은 색)
-const BOARD_ACTIVE: Record<Board, string> = { notices: "bg-brand-blue text-white", guestbook: "bg-brand-green text-white" };
 
 function Notices() {
   const [notices, setNotices] = useState<Notice[] | undefined>(undefined);
@@ -48,11 +46,11 @@ function Notices() {
             className="w-full flex items-center gap-3 py-5 text-left"
           >
             {notice.pinned && (
-              <span className="shrink-0 px-2 py-0.5 rounded-full bg-brand-blue text-white text-xs">고정</span>
+              <span className="shrink-0 px-2 py-0.5 rounded-full bg-stone-900 text-white text-xs">고정</span>
             )}
-            <span className={`flex-1 min-w-0 font-medium truncate ${open === i ? "text-brand-blue" : "text-stone-900"}`}>{notice.title}</span>
+            <span className="flex-1 min-w-0 font-medium text-stone-900 truncate">{notice.title}</span>
             <span className="shrink-0 text-sm text-stone-400 tabular-nums">{formatDate(notice.createdAt)}</span>
-            <span className={`shrink-0 transition-transform ${open === i ? "rotate-180 text-brand-blue" : "text-stone-400"}`} aria-hidden>
+            <span className={`shrink-0 text-stone-400 transition-transform ${open === i ? "rotate-180" : ""}`} aria-hidden>
               ▾
             </span>
           </button>
@@ -81,7 +79,7 @@ export default function Lounge() {
               role="tab"
               aria-selected={board === b}
               onClick={() => setBoard(b)}
-              className={`px-4 py-1.5 rounded-full ${board === b ? BOARD_ACTIVE[b] : "text-stone-500 hover:text-stone-900"}`}
+              className={`px-4 py-1.5 rounded-full ${board === b ? "bg-stone-900 text-white" : "text-stone-500 hover:text-stone-900"}`}
             >
               {BOARD_LABELS[b]}
             </button>
