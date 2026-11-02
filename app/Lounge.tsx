@@ -26,7 +26,8 @@ const BOARD_LABELS: Record<Board, string> = { notices: "공지", guestbook: "방
 
 function Notices() {
   const [notices, setNotices] = useState<Notice[] | undefined>(undefined);
-  const [open, setOpen] = useState<number | null>(0);
+  // 처음에는 모두 접어 두고, 눌러야 내용이 보임
+  const [open, setOpen] = useState<number | null>(null);
 
   useEffect(() => {
     loadNotices().then((r) => setNotices(r.notices));
