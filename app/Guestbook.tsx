@@ -86,7 +86,7 @@ function DeleteControl({ id, onDeleted }: { id: string; onDeleted: () => void })
         aria-label="글 비밀번호"
         autoFocus
         required
-        className="w-28 rounded-lg border border-stone-300 px-2 py-1 focus:outline-none focus:border-stone-900"
+        className="w-28 rounded-lg border border-stone-300 px-2 py-1 focus:outline-none focus:border-guest"
       />
       <button type="submit" disabled={busy} className="text-red-700 font-medium disabled:opacity-50">
         삭제
@@ -180,7 +180,7 @@ export default function Guestbook() {
         <p className="text-stone-500">노래 감상, 응원, 안부 무엇이든 남겨 주세요.</p>
         {entries && entries.length > 0 && (
           <span className="text-sm text-stone-500 tabular-nums">
-            글 <span className="font-semibold text-stone-900">{entries.length}</span>개
+            글 <span className="font-semibold text-guest">{entries.length}</span>개
           </span>
         )}
       </div>
@@ -227,7 +227,7 @@ export default function Guestbook() {
                   onChange={(e) => setName(e.target.value)}
                   maxLength={NAME_MAX}
                   required
-                  className="rounded-lg border border-stone-300 px-3 py-2 focus:outline-none focus:border-stone-900"
+                  className="rounded-lg border border-stone-300 px-3 py-2 focus:outline-none focus:border-guest"
                 />
               </label>
               <label className="grid gap-1.5">
@@ -243,7 +243,7 @@ export default function Guestbook() {
                   maxLength={50}
                   required
                   autoComplete="new-password"
-                  className="rounded-lg border border-stone-300 px-3 py-2 focus:outline-none focus:border-stone-900"
+                  className="rounded-lg border border-stone-300 px-3 py-2 focus:outline-none focus:border-guest"
                 />
               </label>
             </div>
@@ -261,7 +261,7 @@ export default function Guestbook() {
                 maxLength={MESSAGE_MAX}
                 rows={4}
                 required
-                className="rounded-lg border border-stone-300 px-3 py-2 resize-y focus:outline-none focus:border-stone-900"
+                className="rounded-lg border border-stone-300 px-3 py-2 resize-y focus:outline-none focus:border-guest"
               />
             </label>
             <div className="flex items-center justify-between gap-4">
@@ -272,7 +272,7 @@ export default function Guestbook() {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm hover:bg-stone-700 disabled:opacity-50"
+                className="px-5 py-2 rounded-full bg-guest text-white text-sm hover:opacity-90 disabled:opacity-50"
               >
                 {status === "sending" ? "남기는 중…" : "남기기"}
               </button>
