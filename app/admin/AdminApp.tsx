@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore/lite";
 import { getFirebase, type FirebaseServices } from "../firebase";
+import AudioUpload from "./AudioUpload";
 import { loadMusic } from "../musicData";
 import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
 import { Cover } from "../MusicPanel";
@@ -68,11 +69,13 @@ const emptyRelease = (): Release => ({
 });
 
 function ReleaseEditor({
+  fb,
   initial,
   teams,
   onSave,
   onCancel,
 }: {
+  fb: FirebaseServices;
   initial: Release;
   teams: Team[];
   onSave: (r: Release) => Promise<void>;
@@ -186,14 +189,12 @@ function ReleaseEditor({
             className={inputClass}
           />
         </Field>
-        <Field label="미리듣기 음원 주소" hint="선택 · 예: /audio/파일이름.mp3">
-          <input
-            id="release-audio"
-            value={draft.audio ?? ""}
-            onChange={(e) => set("audio", e.target.value)}
-            className={inputClass}
-          />
-        </Field>
+        <div className="grid gap-1.5 min-w-0">
+          <span className="text-sm text-stone-600">
+            미리듣기 음원 <span className="ml-2 text-stone-400">선택</span>
+          </span>
+          <AudioUpload fb={fb} value={draft.audio ?? ""} onChange={(url) => set("audio", url)} />
+        </div>
         <Field label="수록곡" hint="한 줄에 한 곡씩">
           <textarea
             id="release-tracks"
@@ -940,6 +941,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
         <div className="mt-8 grid gap-6">
           {editing?.kind === "release" ? (
             <ReleaseEditor
+              fb={fb}
               key={editing.value.id ?? "new"}
               initial={editing.value}
               teams={teams}

@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// 음원 파일 저장소: 누구나 들을 수 있고, 올리기·지우기는 관리자 구글 계정만.
+// 올리는 파일은 음원(audio/*)이고 100MB보다 작아야 함.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == "gmlqhs@gmail.com"
+        && request.auth.token.email_verified == true;
+    }
+
+    match /audio/{file} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.size < 100 * 1024 * 1024
+        && request.resource.contentType.matches('audio/.*');
+      allow delete: if isAdmin();
+    }
+  }
+}
