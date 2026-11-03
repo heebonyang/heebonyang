@@ -9,18 +9,48 @@
 
 from __future__ import annotations
 
-import json
+import os
 from pathlib import Path
 
 import anthropic
 
-from backends import MAX_LYRICS, MAX_STYLE, MAX_TITLE, ManualBackend, Song, SunoBackend
+from backends import (
+    MAX_LYRICS,
+    MAX_STYLE,
+    MAX_TITLE,
+    ManualBackend,
+    Song,
+    SunoApiOrgBackend,
+    SunoBackend,
+)
 
 MODEL = "claude-opus-5-5"
 HERE = Path(__file__).resolve().parent
+OUT_DIR = HERE / "output"
 
-# 나중에 Suno 공식 API가 생기면 이 줄만 다른 백엔드로 바꾼다.
-BACKEND: SunoBackend = ManualBackend(HERE / "output")
+
+def ask_before_generating(song: Song) -> bool:
+    """크레딧이 나가기 전에 사용자에게 확인한다."""
+    answer = input(f"\n'{song.title}'을(를) Suno로 생성할까요? 크레딧이 차감됩니다. [y/N] ")
+    return answer.strip().lower() in ("y", "yes", "ㅇ", "네", "예")
+
+
+def make_backend() -> SunoBackend:
+    """SUNOAPI_KEY가 있으면 비공식 API로 자동 생성, 없으면 파일만 저장."""
+    key = os.environ.get("SUNOAPI_KEY")
+    if not key:
+        return ManualBackend(OUT_DIR)
+    return SunoApiOrgBackend(
+        OUT_DIR,
+        api_key=key,
+        model=os.environ.get("SUNO_MODEL", "V5"),
+        callback_url=os.environ.get("SUNO_CALLBACK_URL", "https://example.com/suno-callback"),
+        base_url=os.environ.get("SUNOAPI_BASE_URL"),
+        confirm=ask_before_generating,
+    )
+
+
+BACKEND: SunoBackend = make_backend()
 
 SYSTEM_PROMPT = f"""\
 당신은 Suno AI로 음악을 만드는 작곡 파트너입니다. 사용자와 대화하며 곡의 방향을 함께 정하고,
@@ -48,7 +78,8 @@ TOOLS = [
     {
         "name": "save_song",
         "description": (
-            "완성된 곡을 Suno Custom 모드용으로 저장한다. 사용자가 초안을 승인했을 때만 호출한다. "
+            "완성된 곡을 Suno Custom 모드용으로 저장하고, 설정에 따라 Suno로 실제 곡을 생성해 "
+            "mp3를 내려받는다(몇 분 걸리고 유료). 사용자가 초안을 승인했을 때만 호출한다. "
             "길이 제한이나 형식에 문제가 있으면 오류와 이유를 돌려준다."
         ),
         "input_schema": {
@@ -139,7 +170,9 @@ def agent_turn(client: anthropic.Anthropic, messages: list) -> None:
 def main() -> None:
     client = anthropic.Anthropic()  # ANTHROPIC_API_KEY 환경 변수를 사용
     messages: list = []
-    print("Suno 작곡 에이전트입니다. 어떤 곡을 만들고 싶은지 말해 주세요. (빈 줄 엔터로 종료)")
+    mode = "자동 생성 (sunoapi.org)" if isinstance(BACKEND, SunoApiOrgBackend) else "파일 저장만"
+    print(f"Suno 작곡 에이전트입니다. 모드: {mode}")
+    print("어떤 곡을 만들고 싶은지 말해 주세요. (빈 줄 엔터로 종료)")
     try:
         while True:
             user_input = input("\n나> ").strip()
