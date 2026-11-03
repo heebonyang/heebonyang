@@ -39,3 +39,17 @@ jobs:
             exit 0
           fi
           exit $status
+      # 수노 공장 서버 함수(functions/). Blaze 요금제와 비밀값 준비가 끝난 뒤,
+      # 저장소 Settings › Variables에 DEPLOY_FUNCTIONS = true 를 추가하면 배포됨 (README 참고)
+      - name: Deploy functions
+        if: vars.DEPLOY_FUNCTIONS == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NO_COLOR: "1"
+        run: |
+          npm ci --prefix functions
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          status=0
+          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" npx --yes firebase-tools@15 deploy --only functions --project heebonyang --non-interactive --force || status=$?
+          rm -f "$RUNNER_TEMP/sa.json"
+          exit $status
