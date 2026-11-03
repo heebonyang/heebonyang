@@ -1,9 +1,8 @@
 "use client";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { getFirebase, type FirebaseServices } from "../firebase";
+import { getFirebase, type FirebaseServices } from "./firebase";
 
 // 서버 함수(functions/src/index.ts)와 같은 모양
 type Song = { title: string; style: string; lyrics: string; exclude_styles: string; instrumental: boolean; notes: string };
@@ -24,6 +23,7 @@ function call<T>(fb: FirebaseServices, data: unknown): Promise<T> {
 function errorText(e: unknown) {
   const code = (e as { code?: string })?.code ?? "";
   if (code.endsWith("permission-denied")) return "이 계정으로는 수노 공장을 쓸 수 없어요.";
+  if (code.endsWith("not-found") || code.endsWith("internal")) return "서버 함수에 연결하지 못했어요. 서버 함수가 배포됐는지 확인해 주세요.";
   return (e as { message?: string })?.message || "요청하지 못했어요. 잠시 후 다시 시도해 주세요.";
 }
 
@@ -147,7 +147,7 @@ export default function SunoFactory() {
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <span className="font-bold text-stone-900">🏭 수노 공장</span>
           <div className="flex items-center gap-4 text-sm">
-            <Link href="/" className="text-stone-500 hover:text-stone-900">사이트 보기</Link>
+            <a href="https://heebonyang.web.app" className="text-stone-500 hover:text-stone-900">heebonyang.web.app</a>
             {fb && user && (
               <button onClick={() => signOut(getAuth(fb.app))} className="text-stone-500 hover:text-stone-900">로그아웃</button>
             )}
@@ -160,7 +160,7 @@ export default function SunoFactory() {
           <p className="text-stone-400">불러오는 중…</p>
         ) : fb === null ? (
           <p className="rounded-xl border border-amber-300 bg-amber-50 p-5 text-amber-900">
-            Firebase 설정을 찾지 못했어요. 배포된 사이트(heebonyang.web.app/suno)에서 열어 주세요.
+            Firebase 설정을 찾지 못했어요. 배포된 사이트(alkosuno.web.app)에서 열어 주세요.
           </p>
         ) : !user ? (
           <div className="max-w-sm mx-auto mt-16 text-center">

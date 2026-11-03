@@ -22,6 +22,7 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: heebonyang
           channelId: live
+          target: main
       # 데이터베이스 보안 규칙(firestore.rules)도 함께 반영
       - name: Deploy Firestore rules
         env:
@@ -39,10 +40,22 @@ jobs:
             exit 0
           fi
           exit $status
-      # 수노 공장 서버 함수(functions/). Blaze 요금제와 비밀값 준비가 끝난 뒤,
-      # 저장소 Settings › Variables에 DEPLOY_FUNCTIONS = true 를 추가하면 배포됨 (README 참고)
+      # 수노 공장 (alkosuno.web.app, suno-web/)과 서버 함수(functions/).
+      # 준비가 끝난 뒤 저장소 Settings › Variables에 DEPLOY_ALKOSUNO = true 를 추가하면 배포됨 (README 참고)
+      - name: Build alkosuno
+        if: vars.DEPLOY_ALKOSUNO == 'true'
+        run: npm ci --prefix suno-web && npm run build --prefix suno-web
+      - name: Deploy alkosuno
+        if: vars.DEPLOY_ALKOSUNO == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: heebonyang
+          channelId: live
+          target: suno
       - name: Deploy functions
-        if: vars.DEPLOY_FUNCTIONS == 'true'
+        if: vars.DEPLOY_ALKOSUNO == 'true'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           NO_COLOR: "1"

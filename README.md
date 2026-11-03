@@ -20,25 +20,28 @@ npm run build   # out/ 폴더에 정적 사이트 생성 (검사도 함께 실�
 `main`에 푸시하면 GitHub Actions(`.github/workflows/deploy.yml`)가 사이트를 빌드해 Firebase Hosting(프로젝트 `heebonyang`)에 올리고, `firestore.rules`도 함께 반영합니다.
 필요한 비밀값: 저장소 Settings › Secrets › `FIREBASE_SERVICE_ACCOUNT` (서비스 계정 키 JSON).
 
-## 수노 공장 (`/suno`)
+## 수노 공장 (https://alkosuno.web.app)
 
-구글 로그인 후 Claude와 대화하며 Suno 곡(제목 · 스타일 · 가사)을 만들고, 버튼으로 실제 곡까지 생성하는 페이지입니다.
-API 키는 웹 페이지가 아니라 서버 함수(`functions/`, Firebase Cloud Functions)에만 있고, 함수는 `functions/src/index.ts`의
-`ALLOWED_EMAILS`에 있는 계정(지금은 관리자 계정)만 받습니다. 곡 생성은 비공식 유료 서비스 sunoapi.org를 씁니다.
+같은 Firebase 프로젝트(`heebonyang`) 안의 별도 사이트입니다. 구글 로그인 후 Claude와 대화하며 Suno 곡(제목 · 스타일 · 가사)을 만들고,
+버튼으로 실제 곡까지 생성합니다. 코드는 `suno-web/`(페이지)와 `functions/`(서버 함수)에 있습니다.
+API 키는 서버 함수에만 있고, 함수는 `functions/src/index.ts`의 `ALLOWED_EMAILS` 계정(지금은 관리자)만 받습니다.
+곡 생성은 비공식 유료 서비스 sunoapi.org를 씁니다.
 
-처음 한 번 해야 하는 설정 (서버 함수가 배포되기 전에는 페이지에서 요청이 실패합니다):
+처음 한 번 해야 하는 설정:
 
-1. Firebase 콘솔 › 요금제를 **Blaze(종량제)** 로 바꾸기. Cloud Functions는 무료 Spark 요금제에서 쓸 수 없음.
-   사용량이 적으면 함수 요금은 거의 0원이지만, 예산 알림을 걸어 두는 것을 추천.
-2. 비밀값 등록 (터미널, `npm i -g firebase-tools` 후 `firebase login`):
+1. Firebase 콘솔 › 요금제를 **Blaze(종량제)** 로 바꾸기 (Cloud Functions는 무료 요금제에서 안 됨). 예산 알림 추천.
+2. Firebase 콘솔 › Hosting › **다른 사이트 추가** › 사이트 ID `alkosuno`
+   (또는 터미널에서 `firebase hosting:sites:create alkosuno --project heebonyang`).
+3. Firebase 콘솔 › Authentication › 설정 › **승인된 도메인**에 `alkosuno.web.app` 추가 (안 하면 구글 로그인 실패).
+4. 비밀값 등록 (터미널, `npm i -g firebase-tools` 후 `firebase login`):
    ```bash
    firebase functions:secrets:set ANTHROPIC_API_KEY --project heebonyang   # console.anthropic.com
    firebase functions:secrets:set SUNOAPI_KEY --project heebonyang         # sunoapi.org
    ```
-3. Google Cloud 콘솔 › IAM에서 배포용 서비스 계정(`FIREBASE_SERVICE_ACCOUNT`)에 역할 추가:
+5. Google Cloud 콘솔 › IAM에서 배포용 서비스 계정(`FIREBASE_SERVICE_ACCOUNT`)에 역할 추가:
    Cloud Functions 관리자, 서비스 계정 사용자, Secret Manager 뷰어, Artifact Registry 관리자, Cloud Build 편집자.
-4. GitHub 저장소 Settings › Secrets and variables › Actions › **Variables**에 `DEPLOY_FUNCTIONS` = `true` 추가.
-   이후 `main`에 푸시하면 서버 함수도 함께 배포됩니다.
+6. GitHub 저장소 Settings › Secrets and variables › Actions › **Variables**에 `DEPLOY_ALKOSUNO` = `true` 추가.
+   이후 `main`에 푸시하면(또는 Actions에서 워크플로를 직접 실행하면) 수노 공장 사이트와 서버 함수도 함께 배포됩니다.
 
 같은 기능의 터미널용 Python 버전은 `suno-agent/`에 있습니다.
 
@@ -76,14 +79,14 @@ API 키는 웹 페이지가 아니라 서버 함수(`functions/`, Firebase Cloud
 | `app/shop/ShopPage.tsx` | 0집 구매 페이지 (`/shop`) |
 | `app/Lounge.tsx`, `app/Guestbook.tsx` | 라운지: 공지와 방명록 (비밀번호로 직접 삭제, 이름 무지개색) |
 | `app/admin/AdminApp.tsx` | 관리자 페이지 (`/admin`, 구글 로그인) |
-| `app/suno/SunoFactory.tsx` | 수노 공장 (`/suno`, 구글 로그인): 대화 · 곡 초안 · 생성 결과 |
+| `suno-web/app/SunoFactory.tsx` | 수노 공장 사이트 (alkosuno.web.app, 구글 로그인): 대화 · 곡 초안 · 생성 결과 |
 | `functions/src/index.ts` | 수노 공장 서버 함수: 로그인 계정 확인, Claude 대화, sunoapi.org 생성 · 상태 확인 |
 | `app/firebase.ts` | Firebase 연결 (`/__/firebase/init.json`에서 설정을 읽음) |
 | `app/siteSettings.ts` | 머리글 · 링크 · 0집 수량 설정 (`settings/site`) |
 | `app/musicData.ts`, `app/notices.ts` | 음원 · 팀 · 공지 불러오기 (데이터베이스가 비면 코드의 기본값) |
 | `app/music.ts`, `app/shop.ts` | 기본 음원 · 팀 데이터, 0집 판매 정보 |
 | `firestore.rules` | 데이터베이스 보안 규칙: 누구나 읽기, 쓰기는 관리자만 (방명록은 비밀번호 확인) |
-| `firebase.json` | 호스팅 설정 (캐시: 페이지는 항상 새로, `/_next/static`은 오래) |
+| `firebase.json`, `.firebaserc` | 호스팅 설정: `main` = heebonyang.web.app, `suno` = alkosuno.web.app (캐시: 페이지는 항상 새로, `/_next/static`은 오래) |
 
 ## 개발 기록
 
