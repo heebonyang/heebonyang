@@ -8,13 +8,6 @@ import { useSiteSettings, type MusicLink } from "./siteSettings";
 
 type Category = "solo" | "team";
 
-const PLATFORMS: { key: keyof Release["links"]; label: string }[] = [
-  { key: "melon", label: "Melon" },
-  { key: "spotify", label: "Spotify" },
-  { key: "apple", label: "Apple Music" },
-  { key: "youtube", label: "YouTube" },
-];
-
 // 커버 이미지가 없을 때 쓰는 임시 커버 색 (발매 순서대로 돌아가며 사용)
 const PLACEHOLDER_TONES = [
   "from-stone-800 to-stone-600",
@@ -43,7 +36,6 @@ export function Cover({ release, index, large = false }: { release: Release; ind
 }
 
 function Featured({ release, index, isLatest }: { release: Release; index: number; isLatest: boolean }) {
-  const links = PLATFORMS.filter((p) => release.links?.[p.key]);
   return (
     <div className="grid gap-8 md:grid-cols-2 md:gap-12 items-center">
       <div className="overflow-hidden rounded-2xl shadow-2xl shadow-stone-400/40">
@@ -75,26 +67,6 @@ function Featured({ release, index, isLatest }: { release: Release; index: numbe
             </li>
           ))}
         </ol>
-
-        {links.length > 0 && (
-          <div className="mt-6 flex flex-wrap gap-2">
-            {links.map((p, i) => (
-              <a
-                key={p.key}
-                href={release.links[p.key]}
-                target="_blank"
-                rel="noreferrer"
-                className={`px-4 py-2 rounded-full text-sm transition-colors ${
-                  i === 0
-                    ? "bg-stone-900 text-white hover:bg-stone-700"
-                    : "border border-stone-300 text-stone-700 hover:border-stone-900"
-                }`}
-              >
-                {i === 0 ? `${p.label}에서 듣기` : p.label}
-              </a>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

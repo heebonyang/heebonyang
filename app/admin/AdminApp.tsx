@@ -17,13 +17,6 @@ const SECTION_LABELS: Record<Section, string> = { headings: "머리글", links: 
 
 const RELEASE_TYPES: Release["type"][] = ["싱글", "EP", "정규"];
 
-const LINK_FIELDS: { key: keyof Release["links"]; label: string }[] = [
-  { key: "melon", label: "Melon" },
-  { key: "spotify", label: "Spotify" },
-  { key: "apple", label: "Apple Music" },
-  { key: "youtube", label: "YouTube" },
-];
-
 // Firestore 문서 하나는 1MB까지라서, 커버 이미지는 가로세로 최대 800px JPEG로 줄여서 저장
 const COVER_SIZE = 800;
 
@@ -109,13 +102,13 @@ function ReleaseEditor({
     }
     setSaving(true);
     setError("");
-    const links = Object.fromEntries(Object.entries(draft.links).filter(([, v]) => v && v.trim())) as Release["links"];
     try {
       await onSave({
         ...draft,
         title: draft.title.trim(),
         tracks: tracksText.split("\n").map((t) => t.trim()).filter(Boolean),
-        links,
+        // 음원 사이트 링크는 더 쓰지 않음 (예전에 넣어 둔 값도 저장할 때 지움)
+        links: {},
       });
     } catch (err) {
       setError(errorMessage(err));
@@ -210,20 +203,6 @@ function ReleaseEditor({
             className={inputClass}
           />
         </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {LINK_FIELDS.map((f) => (
-            <Field key={f.key} label={`${f.label} 링크`} hint="선택">
-              <input
-                id={`release-link-${f.key}`}
-                type="url"
-                value={draft.links[f.key] ?? ""}
-                onChange={(e) => set("links", { ...draft.links, [f.key]: e.target.value })}
-                placeholder="https://"
-                className={inputClass}
-              />
-            </Field>
-          ))}
-        </div>
 
         {error && <p className="text-sm text-red-700">{error}</p>}
         <div className="flex justify-end gap-2">
