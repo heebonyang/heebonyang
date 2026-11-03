@@ -16,6 +16,7 @@ export type Team = {
   period: string;
   role: string;
   description?: string;
+  image?: string; // 팀 사진 (관리자 페이지에서 올림, 가로세로 최대 800px JPEG)
   order?: number; // 관리자 페이지에서 정한 표시 순서 (작을수록 위)
 };
 

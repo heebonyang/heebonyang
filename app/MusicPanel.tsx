@@ -215,6 +215,10 @@ function Discography({
             <div key={team.id ?? team.name} className="py-10">
               <div className="grid gap-2 md:grid-cols-[1fr_2fr] md:gap-10">
                 <div>
+                  {team.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={team.image} alt={`${team.name} 사진`} className="mb-4 w-full aspect-[4/3] object-cover rounded-xl" />
+                  )}
                   <h3 className="text-xl font-bold text-stone-900">{team.name}</h3>
                   {(team.period || team.role) && (
                     <p className="mt-1 text-sm text-stone-500 tabular-nums">

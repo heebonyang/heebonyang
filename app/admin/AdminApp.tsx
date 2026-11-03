@@ -234,6 +234,21 @@ function TeamEditor({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const set = <K extends keyof Team>(key: K, value: Team[K]) => setDraft((d) => ({ ...d, [key]: value }));
+  const [over, setOver] = useState(false);
+
+  const pickImage = async (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("사진 파일만 넣을 수 있어요.");
+      return;
+    }
+    try {
+      setError("");
+      set("image", await resizeImage(file));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -269,6 +284,50 @@ function TeamEditor({
           className={inputClass}
         />
       </Field>
+      <div className="grid gap-1.5">
+        <span className="text-sm text-stone-600">
+          팀 사진 <span className="ml-2 text-stone-400">선택 · 끌어다 놓거나 눌러서 고르기</span>
+        </span>
+        <div className="flex flex-wrap items-end gap-3">
+          <label
+            onDragOver={(e) => {
+              e.preventDefault();
+              setOver(true);
+            }}
+            onDragLeave={() => setOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setOver(false);
+              pickImage(e.dataTransfer.files[0]);
+            }}
+            className={`grid place-items-center w-60 aspect-[4/3] overflow-hidden rounded-xl border-2 border-dashed cursor-pointer text-sm text-stone-500 ${
+              over ? "border-stone-900 bg-stone-100" : "border-stone-300 bg-stone-50 hover:border-stone-500"
+            }`}
+          >
+            {draft.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={draft.image} alt="팀 사진 미리보기" className="w-full h-full object-cover" />
+            ) : (
+              <span>사진을 여기에 끌어다 놓기</span>
+            )}
+            <input
+              id="team-image"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => {
+                pickImage(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+          </label>
+          {draft.image && (
+            <button type="button" onClick={() => set("image", undefined)} className="text-sm text-stone-500 hover:text-red-700">
+              사진 빼기
+            </button>
+          )}
+        </div>
+      </div>
       {initial.id && initial.name !== draft.name && (
         <p className="text-sm text-amber-800">팀 이름을 바꾸면, 이 팀으로 등록된 음원의 구분도 함께 바뀌어요.</p>
       )}
@@ -823,6 +882,8 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
 
   const saveTeam = async (t: Team) => {
     const { id, ...data } = t;
+    // 데이터베이스는 빈 값(undefined)을 저장하지 못하므로, 사진을 뺐으면 칸 자체를 지움
+    if (!data.image) delete data.image;
     if (id) {
       await setDoc(doc(fb.db, "teams", id), data);
       const oldName = teams.find((x) => x.id === id)?.name;
