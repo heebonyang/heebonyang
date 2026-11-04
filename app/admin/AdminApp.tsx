@@ -1511,6 +1511,14 @@ function InfoListEditor({
       <legend className="font-semibold text-stone-900">{title}</legend>
       <p className="-mt-1 text-sm text-stone-500">{hint}</p>
       {items.length === 0 && <p className="text-sm text-stone-400">항목이 없어요. 비워 두면 치과 탭에 이 부분이 보이지 않아요.</p>}
+      {items.length > 0 && (
+        <div className="flex gap-2 text-xs text-stone-500" aria-hidden>
+          <span className="w-5 shrink-0" />
+          <span className="w-32 shrink-0">제목 (작은 회색 글씨)</span>
+          <span className="flex-1">내용 (크게 보이는 글씨)</span>
+          <span className="w-8 shrink-0" />
+        </div>
+      )}
       {items.map((it, i) => (
         <div key={i} className="flex items-start gap-2">
           <div className="flex flex-col pt-1">
@@ -1528,15 +1536,15 @@ function InfoListEditor({
             </button>
           </div>
           <input
-            aria-label="칸 이름"
-            placeholder="칸 이름 (예: 전화)"
+            aria-label="제목"
+            placeholder="예: 진료 시간"
             value={it.label}
             onChange={(e) => update(i, { label: e.target.value })}
             className={`${inputClass} w-32 shrink-0`}
           />
           <textarea
             aria-label="내용"
-            placeholder="내용"
+            placeholder="예: 평일 09:30 – 18:30"
             rows={1}
             value={it.value}
             onChange={(e) => update(i, { value: e.target.value })}
@@ -1603,7 +1611,7 @@ function ClinicInfoEditor({ fb }: { fb: FirebaseServices }) {
     <form onSubmit={submit} className="mt-8 grid gap-8 rounded-2xl border border-stone-200 bg-white p-6">
       <InfoListEditor
         title="진료 안내"
-        hint="치과 탭에 카드로 보여요. 예: 전문 분야, 소속, 진료 시간"
+        hint="치과 탭에 카드로 보여요. 왼쪽 칸은 카드 위 작은 제목(예: 소속), 오른쪽 칸은 크게 보이는 내용(예: ○○치과)이에요."
         items={clinic}
         onChange={changed(setClinic)}
       />
