@@ -13,7 +13,8 @@ import {
 } from "firebase/firestore/lite";
 import { getFirebase } from "./firebase";
 
-export type GuestbookEntry = { id: string; name: string; message: string; createdAt: Timestamp | null };
+// liked: 홈페이지 주인(관리자)이 관리자 페이지에서 남긴 하트
+export type GuestbookEntry = { id: string; name: string; message: string; createdAt: Timestamp | null; liked?: boolean };
 
 export const NAME_MAX = 30;
 export const MESSAGE_MAX = 500;
@@ -104,6 +105,14 @@ function DeleteControl({ id, onDeleted }: { id: string; onDeleted: () => void })
       </button>
       {error && <span className="w-full text-right text-red-700">{error}</span>}
     </form>
+  );
+}
+
+export function HeartIcon({ filled = false }: { filled?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" aria-hidden>
+      <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z" strokeLinejoin="round" />
+    </svg>
   );
 }
 
@@ -211,6 +220,12 @@ export default function Guestbook() {
                   <p className="mt-2 text-[15px] leading-relaxed text-stone-800 whitespace-pre-wrap break-words">
                     {entry.message}
                   </p>
+                  {entry.liked && (
+                    <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-rose-600">
+                      <HeartIcon filled />
+                      양희본이 하트를 남겼어요
+                    </p>
+                  )}
                 </div>
               </li>
             ))}

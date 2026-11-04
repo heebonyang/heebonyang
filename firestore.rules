@@ -60,6 +60,10 @@ service cloud.firestore {
         && request.resource.data.message.size() <= 500
         && request.resource.data.createdAt == request.time
         && existsAfter(/databases/$(database)/documents/guestbookKeys/$(id));
+      // 하트: 홈페이지 주인(관리자)만, liked 칸만 바꿀 수 있음
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["liked"])
+        && request.resource.data.liked is bool;
       // 작성자 삭제: 같은 묶음 요청으로 guestbookUnlock에 남긴 해시가 저장된 해시와 같아야 함
       allow delete: if isAdmin()
         || getAfter(/databases/$(database)/documents/guestbookUnlock/$(id)).data.hash

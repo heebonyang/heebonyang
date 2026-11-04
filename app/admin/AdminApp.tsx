@@ -8,7 +8,7 @@ import AudioUpload from "./AudioUpload";
 import { deleteAudio } from "../audioStore";
 import { loadDemos, type Demo } from "../demos";
 import { loadMusic } from "../musicData";
-import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
+import { formatDate, HeartIcon, loadGuestbook, type GuestbookEntry } from "../Guestbook";
 import { RELEASES, type Release, type Team } from "../music";
 import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
 import { loadSettings, SETTINGS_DOC, type MusicLink, type SiteSettings } from "../siteSettings";
@@ -962,6 +962,18 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
     }
   };
 
+  // 방명록 하트: 관리자만 남기고 취소할 수 있음 (firestore.rules 에서 liked 칸만 바꿀 수 있게 막음)
+  const toggleHeart = async (g: GuestbookEntry) => {
+    const liked = !g.liked;
+    setGuestbook((list) => list.map((x) => (x.id === g.id ? { ...x, liked } : x)));
+    try {
+      await setDoc(doc(fb.db, "guestbook", g.id), { liked }, { merge: true });
+    } catch (e) {
+      setGuestbook((list) => list.map((x) => (x.id === g.id ? { ...x, liked: g.liked } : x)));
+      setNotice(errorMessage(e));
+    }
+  };
+
   const remove = async (path: string, id: string, label: string) => {
     try {
       await deleteDoc(doc(fb.db, path, id));
@@ -1174,6 +1186,16 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
                 </p>
                 <p className="mt-1 whitespace-pre-wrap break-words">{g.message}</p>
               </div>
+              <button
+                type="button"
+                onClick={() => toggleHeart(g)}
+                aria-pressed={!!g.liked}
+                aria-label={g.liked ? "하트 취소" : "하트 남기기"}
+                title={g.liked ? "하트 취소" : "하트 남기기"}
+                className={`self-start ${g.liked ? "text-rose-600" : "text-stone-300 hover:text-rose-600"}`}
+              >
+                <HeartIcon filled={!!g.liked} />
+              </button>
               <ConfirmButton label="삭제" onConfirm={() => remove("guestbook", g.id, "방명록 글")} />
             </li>
           ))}
