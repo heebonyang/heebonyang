@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { getFirebase } from "./firebase";
 import { audioUrl, computePeaks, isDbAudio, loadPeaks, PEAK_BARS } from "./audioStore";
 
-// 한 번에 한 곡만: 어떤 곡이 재생되면 다른 플레이어는 멈춤
+// 한 번에 한 곡만: 어떤 곡이 재생되면 앞서 재생하던 곡은 멈추고 처음으로 되돌림
 let current: HTMLAudioElement | null = null;
 
 const fmt = (sec: number) => {
@@ -133,7 +133,10 @@ export default function AudioPlayer({ src, className = "" }: { src: string; clas
         src={url ?? undefined}
         preload="metadata"
         onPlay={(e) => {
-          if (current && current !== e.currentTarget) current.pause();
+          if (current && current !== e.currentTarget) {
+            current.pause();
+            current.currentTime = 0;
+          }
           current = e.currentTarget;
           setPlaying(true);
         }}
