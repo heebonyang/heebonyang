@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MUSIC_PROFILE, type Release, type Team } from "./music";
 import { useMusicData } from "./musicData";
 import AlbumBanner from "./AlbumBanner";
@@ -273,10 +273,12 @@ export default function MusicPanel() {
   const data = useMusicData();
   const settings = useSiteSettings();
   const [chosen, setChosen] = useState<number | null>(null);
+  const featuredRef = useRef<HTMLDivElement>(null);
 
   const choose = (i: number) => {
     setChosen(i);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // 페이지 맨 위가 아니라, 고른 곡이 크게 보이는 자리까지만 올라감 (상단 바 높이만큼 여유)
+    featuredRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const releases = data?.releases ?? [];
@@ -310,7 +312,9 @@ export default function MusicPanel() {
         <p className="py-20 text-center text-stone-500">곧 음원 소식을 전할게요.</p>
       ) : (
         <>
-          <Featured release={releases[selected]} index={selected} isLatest={selected === latestSolo} />
+          <div ref={featuredRef} className="scroll-mt-24">
+            <Featured release={releases[selected]} index={selected} isLatest={selected === latestSolo} />
+          </div>
           <Discography releases={releases} teams={data.teams} selected={selected} onChoose={choose} />
         </>
       )}
