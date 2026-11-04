@@ -1512,15 +1512,16 @@ function InfoListEditor({
       <p className="-mt-1 text-sm text-stone-500">{hint}</p>
       {items.length === 0 && <p className="text-sm text-stone-400">항목이 없어요. 비워 두면 치과 탭에 이 부분이 보이지 않아요.</p>}
       {items.length > 0 && (
-        <div className="flex gap-2 text-xs text-stone-500" aria-hidden>
-          <span className="w-5 shrink-0" />
-          <span className="w-32 shrink-0">제목 (작은 회색 글씨)</span>
-          <span className="flex-1">내용 (크게 보이는 글씨)</span>
-          <span className="w-8 shrink-0" />
+        // 넓은 화면: [순서] [제목 10rem] [내용] [✕] 한 줄. 휴대폰: 제목 아래에 내용
+        <div className="hidden sm:grid grid-cols-[1.5rem_10rem_minmax(0,1fr)_2rem] gap-2 text-xs text-stone-500" aria-hidden>
+          <span />
+          <span>제목 (작은 회색 글씨)</span>
+          <span>내용 (크게 보이는 글씨)</span>
+          <span />
         </div>
       )}
       {items.map((it, i) => (
-        <div key={i} className="flex items-start gap-2">
+        <div key={i} className="grid grid-cols-[1.5rem_minmax(0,1fr)_2rem] sm:grid-cols-[1.5rem_10rem_minmax(0,1fr)_2rem] items-start gap-2">
           <div className="flex flex-col pt-1">
             <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`${it.label || "항목"} 위로`} className="px-1 text-xs text-stone-500 hover:text-stone-900 disabled:opacity-25">
               ▲
@@ -1535,21 +1536,23 @@ function InfoListEditor({
               ▼
             </button>
           </div>
-          <input
-            aria-label="제목"
-            placeholder="예: 진료 시간"
-            value={it.label}
-            onChange={(e) => update(i, { label: e.target.value })}
-            className={`${inputClass} w-32 shrink-0`}
-          />
-          <textarea
-            aria-label="내용"
-            placeholder="예: 평일 09:30 – 18:30"
-            rows={1}
-            value={it.value}
-            onChange={(e) => update(i, { value: e.target.value })}
-            className={`${inputClass} min-w-0 flex-1 resize-y`}
-          />
+          <div className="grid gap-2 min-w-0 sm:contents">
+            <input
+              aria-label="제목"
+              placeholder="제목 (예: 진료 시간)"
+              value={it.label}
+              onChange={(e) => update(i, { label: e.target.value })}
+              className={`${inputClass} min-w-0 text-sm`}
+            />
+            <textarea
+              aria-label="내용"
+              placeholder="내용 (예: 평일 09:30 – 18:30)"
+              rows={1}
+              value={it.value}
+              onChange={(e) => update(i, { value: e.target.value })}
+              className={`${inputClass} min-w-0 resize-y`}
+            />
+          </div>
           <button
             type="button"
             onClick={() => onChange(items.filter((_, k) => k !== i))}
