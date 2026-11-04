@@ -187,7 +187,7 @@ function Discography({
   return (
     <section className="mt-20 py-14 border-t border-stone-200">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold text-stone-900">Discography</h2>
+        <h2 className="text-2xl font-bold text-stone-900">발매곡</h2>
         <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
           {(["solo", "team"] as const).map((c) => (
             <button

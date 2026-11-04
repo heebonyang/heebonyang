@@ -50,7 +50,7 @@ npm run build   # out/ 폴더에 정적 사이트 생성 (검사도 함께 실�
 | 파일 | 역할 |
 | --- | --- |
 | `app/ProfileTabs.tsx` | 첫 화면: 상단 바(SNS · 탭)와 음악 / 치과 / 라운지 탭 전환, 치과 탭 |
-| `app/MusicPanel.tsx` | 음악 탭: 머리글 · 로고 링크, 0집 배너, 대표곡 플레이어, 디스코그래피(솔로 / 팀), 문의 |
+| `app/MusicPanel.tsx` | 음악 탭: 머리글 · 로고 링크, 0집 배너, 대표곡 플레이어, 발매곡(솔로 / 팀), 문의 |
 | `app/AlbumBanner.tsx`, `app/LimitedStock.tsx` | 0집 판매 배너와 한정판 남은 수량 막대 |
 | `app/shop/ShopPage.tsx` | 0집 구매 페이지 (`/shop`) |
 | `app/Lounge.tsx`, `app/Guestbook.tsx` | 라운지: 공지와 방명록 (비밀번호로 직접 삭제, 이름 무지개색) |
