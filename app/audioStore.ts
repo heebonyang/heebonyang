@@ -12,9 +12,55 @@ const CHUNK = 900 * 1024;
 
 export const isDbAudio = (src?: string) => !!src && src.startsWith(DB_AUDIO);
 
+// 파형: 곡을 PEAK_BARS 구간으로 나눠 구간마다 소리 크기(RMS)를 0~1로 저장.
+// 사이트에 함께 올라간 곡은 public/audio/peaks.json (같은 방식으로 미리 계산), 올린 곡은 audioFiles 정보에 함께 저장.
+export const PEAK_BARS = 72;
+
+export async function computePeaks(data: ArrayBuffer): Promise<number[] | undefined> {
+  try {
+    const ctx = new AudioContext();
+    const audio = await ctx.decodeAudioData(data.slice(0));
+    ctx.close();
+    const ch = audio.getChannelData(0);
+    const size = Math.max(1, Math.floor(ch.length / PEAK_BARS));
+    const rms = Array.from({ length: PEAK_BARS }, (_, i) => {
+      let sum = 0;
+      const end = Math.min(ch.length, (i + 1) * size);
+      for (let j = i * size; j < end; j++) sum += ch[j] * ch[j];
+      return Math.sqrt(sum / Math.max(1, end - i * size));
+    });
+    const max = Math.max(...rms) || 1;
+    return rms.map((v) => Math.round((v / max) * 100) / 100);
+  } catch {
+    return undefined;
+  }
+}
+
+let staticPeaks: Promise<Record<string, number[]>> | null = null;
+const peakCache = new Map<string, Promise<number[] | undefined>>();
+
+export function loadPeaks(fb: FirebaseServices | null, src: string): Promise<number[] | undefined> {
+  let p = peakCache.get(src);
+  if (!p) {
+    p = (async () => {
+      if (!isDbAudio(src)) {
+        staticPeaks ??= fetch("/audio/peaks.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+        return (await staticPeaks)[src];
+      }
+      if (!fb) return undefined;
+      const meta = await getDoc(doc(fb.db, "audioFiles", src.slice(DB_AUDIO.length)));
+      return meta.data()?.peaks as number[] | undefined;
+    })().catch(() => undefined);
+    peakCache.set(src, p);
+  }
+  return p;
+}
+
 export async function uploadAudio(fb: FirebaseServices, file: File, onProgress: (ratio: number) => void): Promise<string> {
   const meta = doc(collection(fb.db, "audioFiles"));
-  const bytes = new Uint8Array(await file.arrayBuffer());
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  const peaks = await computePeaks(buffer);
   const count = Math.ceil(bytes.length / CHUNK);
   for (let i = 0; i < count; i++) {
     const part = Bytes.fromUint8Array(bytes.subarray(i * CHUNK, (i + 1) * CHUNK));
@@ -22,7 +68,14 @@ export async function uploadAudio(fb: FirebaseServices, file: File, onProgress: 
     onProgress((i + 1) / count);
   }
   // 조각을 다 올린 뒤에 정보를 적음 (중간에 끊기면 정보가 없어 재생 목록에 쓰이지 않음)
-  await setDoc(meta, { name: file.name, type: file.type, size: file.size, chunks: count, createdAt: serverTimestamp() });
+  await setDoc(meta, {
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    chunks: count,
+    ...(peaks ? { peaks } : {}),
+    createdAt: serverTimestamp(),
+  });
   return DB_AUDIO + meta.id;
 }
 
