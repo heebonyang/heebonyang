@@ -5,6 +5,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# 배포는 한 번에 하나씩, 들어온 순서대로. 기다리는 배포가 여러 개면 가장 최근 것만 남김
+# (예전 코드가 늦게 끝나 최신 화면을 덮어쓰지 않도록)
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
