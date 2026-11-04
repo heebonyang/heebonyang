@@ -71,18 +71,18 @@ function splitBioLine(line: string) {
 function DentalBio({ bio }: { bio: string }) {
   const lines = bio.split("\n").map((l) => l.trim()).filter(Boolean);
   if (lines.length === 0) return null;
+  const items = lines.map(splitBioLine);
+  // 연도를 쓴 줄이 하나라도 있을 때만 왼쪽에 연도 칸을 둠
+  const hasWhen = items.some((it) => it.when);
   return (
     <Section tab="dental" eyebrow="Profile" title="약력">
-      <ul className="rounded-2xl border border-stone-200 bg-white divide-y divide-stone-200">
-        {lines.map((line, i) => {
-          const { when, what } = splitBioLine(line);
-          return (
-            <li key={i} className="grid gap-1 sm:grid-cols-[160px_1fr] sm:gap-6 px-5 py-4">
-              <span className={`text-sm font-semibold text-brand-blue tabular-nums ${when ? "" : "hidden sm:block"}`}>{when}</span>
-              <span className="text-stone-900">{what}</span>
-            </li>
-          );
-        })}
+      <ul className="grid gap-3">
+        {items.map(({ when, what }, i) => (
+          <li key={i} className={hasWhen ? "grid gap-x-6 sm:grid-cols-[140px_1fr]" : ""}>
+            {hasWhen && <span className="text-sm text-stone-500 tabular-nums sm:pt-0.5">{when}</span>}
+            <span className="text-lg text-stone-900">{what}</span>
+          </li>
+        ))}
       </ul>
     </Section>
   );
