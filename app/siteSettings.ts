@@ -13,6 +13,9 @@ export type MusicLink = {
   logo?: string;
 };
 
+// 치과 탭 '진료 안내'·'진료 예약·문의'의 한 칸 (관리자 페이지 '치과 정보'에서 관리)
+export type InfoItem = { label: string; value: string };
+
 export type SiteSettings = {
   musicTagline: string;
   dentalTagline: string;
@@ -23,6 +26,8 @@ export type SiteSettings = {
   albumTotal: number;
   // 치과 탭 약력 (관리자 페이지 '약력'에서 관리). 한 줄에 하나씩, 앞에 연도를 쓰면 왼쪽에 따로 보임
   dentalBio: string;
+  dentalClinic: InfoItem[];
+  dentalContact: InfoItem[];
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
@@ -34,6 +39,15 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   albumStock: ALBUM0.stock,
   albumTotal: ALBUM0.total,
   dentalBio: "",
+  dentalClinic: [
+    { label: "전문 분야", value: "일반 진료 · 보존 · 보철" },
+    { label: "소속", value: "○○치과의원" },
+    { label: "진료 시간", value: "평일 09:30 – 18:30" },
+  ],
+  dentalContact: [
+    { label: "전화", value: "02-000-0000" },
+    { label: "주소", value: "서울시 ○○구 ○○로 00" },
+  ],
 };
 
 export const SETTINGS_DOC = ["settings", "site"] as const;

@@ -11,19 +11,8 @@ import { useSiteSettings } from "./siteSettings";
 // 음악과 치과는 서로 완전히 분리된 탭으로, 내용이 섞이지 않습니다.
 const NAME_EN = "Heebon Yang";
 
-const DENTAL = {
-  role: "치과의사",
-  title: "양희본",
-  items: [
-    { label: "전문 분야", value: "일반 진료 · 보존 · 보철" },
-    { label: "소속", value: "○○치과의원" },
-    { label: "진료 시간", value: "평일 09:30 – 18:30" },
-  ],
-  contact: [
-    { label: "전화", value: "02-000-0000" },
-    { label: "주소", value: "서울시 ○○구 ○○로 00" },
-  ],
-};
+// 진료 안내·연락처는 관리자 페이지 '치과 정보'에서 고침 (기본값은 app/siteSettings.ts)
+const DENTAL = { role: "치과의사", title: "양희본" };
 // ────────────────────────────────────────────────────────────────
 
 type Tab = "music" | "dental" | "lounge";
@@ -88,6 +77,25 @@ function DentalBio({ bio }: { bio: string }) {
   );
 }
 
+// 전화번호는 눌러서 바로 걸 수 있게, 인터넷 주소는 링크로
+function ContactValue({ value }: { value: string }) {
+  if (/^https?:\/\//.test(value)) {
+    return (
+      <a href={value} target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-brand-blue">
+        {value}
+      </a>
+    );
+  }
+  if (/^[\d\s()+-]{7,}$/.test(value)) {
+    return (
+      <a href={`tel:${value.replace(/[^\d+]/g, "")}`} className="underline underline-offset-4 hover:text-brand-blue">
+        {value}
+      </a>
+    );
+  }
+  return <>{value}</>;
+}
+
 function DentalPanel() {
   const settings = useSiteSettings();
   return (
@@ -95,26 +103,32 @@ function DentalPanel() {
       <Hero tab="dental" {...DENTAL} tagline={settings?.dentalTagline} />
       {/* 약력은 이름 바로 아래, 가장 먼저 보이는 자리 */}
       {settings && <DentalBio bio={settings.dentalBio} />}
-      <Section tab="dental" eyebrow="Clinic" title="진료 안내">
-        <dl className="grid gap-4 sm:grid-cols-3">
-          {DENTAL.items.map((item) => (
-            <div key={item.label} className="rounded-xl border border-stone-200 bg-white p-5">
-              <dt className="text-sm text-stone-500">{item.label}</dt>
-              <dd className="mt-1 font-medium text-stone-900">{item.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </Section>
-      <Section tab="dental" eyebrow="Contact" title="진료 예약·문의">
-        <dl className="space-y-2 text-sm">
-          {DENTAL.contact.map((item) => (
-            <div key={item.label} className="flex gap-3">
-              <dt className="text-stone-500">{item.label}</dt>
-              <dd className="text-stone-900">{item.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </Section>
+      {settings && settings.dentalClinic.length > 0 && (
+        <Section tab="dental" eyebrow="Clinic" title="진료 안내">
+          <dl className="grid gap-4 sm:grid-cols-3">
+            {settings.dentalClinic.map((item, i) => (
+              <div key={i} className="rounded-xl border border-stone-200 bg-white p-5">
+                <dt className="text-sm text-stone-500">{item.label}</dt>
+                <dd className="mt-1 font-medium text-stone-900 whitespace-pre-wrap">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </Section>
+      )}
+      {settings && settings.dentalContact.length > 0 && (
+        <Section tab="dental" eyebrow="Contact" title="진료 예약·문의">
+          <dl className="space-y-2">
+            {settings.dentalContact.map((item, i) => (
+              <div key={i} className="flex gap-4">
+                <dt className="w-20 shrink-0 text-stone-500">{item.label}</dt>
+                <dd className="min-w-0 text-stone-900 whitespace-pre-wrap break-words">
+                  <ContactValue value={item.value} />
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </Section>
+      )}
     </>
   );
 }
