@@ -9,7 +9,6 @@ import { deleteAudio } from "../audioStore";
 import { loadDemos, type Demo } from "../demos";
 import { loadMusic } from "../musicData";
 import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
-import { Cover } from "../MusicPanel";
 import { RELEASES, type Release, type Team } from "../music";
 import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
 import { loadSettings, SETTINGS_DOC, type MusicLink, type SiteSettings } from "../siteSettings";
@@ -122,26 +121,34 @@ function ReleaseEditor({
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-6 md:grid-cols-[200px_1fr] rounded-2xl border border-stone-200 bg-white p-6">
-      <div className="grid gap-3 content-start">
-        <div className="overflow-hidden rounded-xl border border-stone-200">
-          <Cover release={{ ...draft, title: draft.title || "제목" }} index={0} />
+    <form onSubmit={submit} className="grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+      <div className="flex items-center gap-4">
+        <div className="w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-stone-100">
+          {draft.cover && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={draft.cover} alt="커버 미리보기" className="w-full h-full object-cover" />
+          )}
         </div>
-        <label className="text-center text-sm px-3 py-2 rounded-lg border border-stone-300 cursor-pointer hover:border-stone-900">
-          커버 이미지 선택
-          <input
-            id="release-cover"
-            type="file"
-            accept="image/*"
-            className="sr-only"
-            onChange={(e) => pickCover(e.target.files?.[0])}
-          />
-        </label>
-        {draft.cover && (
-          <button type="button" onClick={() => set("cover", undefined)} className="text-sm text-stone-500 hover:text-red-700">
-            커버 지우기
-          </button>
-        )}
+        <div className="grid gap-1 text-sm">
+          <span className="text-stone-600">커버 이미지 <span className="ml-1 text-stone-400">선택 · 없으면 제목으로 표시</span></span>
+          <div className="flex gap-4">
+            <label className="text-stone-900 underline underline-offset-4 cursor-pointer">
+              {draft.cover ? "바꾸기" : "이미지 고르기"}
+              <input
+                id="release-cover"
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={(e) => pickCover(e.target.files?.[0])}
+              />
+            </label>
+            {draft.cover && (
+              <button type="button" onClick={() => set("cover", undefined)} className="text-stone-500 hover:text-red-700">
+                지우기
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4 min-w-0">
@@ -519,7 +526,6 @@ function AlbumStockEditor({ fb }: { fb: FirebaseServices }) {
     setStock(value);
     setStatus("idle");
   };
-  const step = (delta: number) => change(String(Math.max(0, Math.min(totalNum || Infinity, (Number(stock) || 0) + delta))));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -540,25 +546,14 @@ function AlbumStockEditor({ fb }: { fb: FirebaseServices }) {
       <p className="text-sm text-stone-500">첫 화면과 구매 페이지의 &lsquo;남은 수량&rsquo; 게이지에 바로 반영돼요. 0이 되면 품절로 표시돼요.</p>
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="남은 수량" hint="장">
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={() => step(-10)} className="px-2.5 py-2 rounded-lg border border-stone-300 text-sm tabular-nums">
-              −10
-            </button>
-            <button type="button" onClick={() => step(-1)} className="px-3 py-2 rounded-lg border border-stone-300 text-sm">
-              −1
-            </button>
-            <input
-              id="album-stock"
-              type="number"
-              min={0}
-              value={stock}
-              onChange={(e) => change(e.target.value)}
-              className={`${inputClass} text-center text-lg font-semibold tabular-nums`}
-            />
-            <button type="button" onClick={() => step(1)} className="px-3 py-2 rounded-lg border border-stone-300 text-sm">
-              +1
-            </button>
-          </div>
+          <input
+            id="album-stock"
+            type="number"
+            min={0}
+            value={stock}
+            onChange={(e) => change(e.target.value)}
+            className={`${inputClass} tabular-nums`}
+          />
         </Field>
         <Field label="전체 수량 (한정판)" hint="장">
           <input
@@ -1036,10 +1031,13 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
           )}
           <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
             {releases.length === 0 && <li className="p-5 text-stone-500">아직 등록된 음원이 없어요.</li>}
-            {releases.map((r, i) => (
+            {releases.map((r) => (
               <li key={r.id} className="flex items-center gap-4 p-4">
-                <div className="w-14 shrink-0 overflow-hidden rounded-md">
-                  <Cover release={r} index={i} />
+                <div className="w-12 h-12 shrink-0 overflow-hidden rounded-md bg-stone-100">
+                  {r.cover && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={r.cover} alt="" className="w-full h-full object-cover" />
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-stone-900 truncate">{r.title}</p>
