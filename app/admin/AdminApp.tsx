@@ -14,9 +14,9 @@ import { RELEASES, type Release, type Team } from "../music";
 import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
 import { loadSettings, SETTINGS_DOC, type MusicLink, type SiteSettings } from "../siteSettings";
 
-type Section = "headings" | "links" | "album" | "releases" | "demos" | "teams" | "notices" | "guestbook";
+type Section = "headings" | "bio" | "links" | "album" | "releases" | "demos" | "teams" | "notices" | "guestbook";
 
-const SECTION_LABELS: Record<Section, string> = { headings: "머리글", links: "링크", album: "0집 CD", releases: "음원", demos: "데모", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
+const SECTION_LABELS: Record<Section, string> = { headings: "머리글", bio: "치과 약력", links: "링크", album: "0집 CD", releases: "음원", demos: "데모", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
 
 const RELEASE_TYPES: Release["type"][] = ["싱글", "EP", "정규"];
 
@@ -1144,6 +1144,8 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
 
       {section === "headings" && <HeadingsEditor fb={fb} />}
 
+      {section === "bio" && <BioEditor fb={fb} />}
+
       {section === "demos" && <DemosManager fb={fb} />}
 
       {section === "links" && <LinksManager fb={fb} />}
@@ -1389,5 +1391,63 @@ function DemosManager({ fb }: { fb: FirebaseServices }) {
       </ul>
       <p className="text-sm text-stone-500">MP3, 한 곡 15MB 이하. ▲ ▼로 순서를 바꾸면 음악 탭에도 같은 순서로 보여요.</p>
     </div>
+  );
+}
+
+// 치과 탭 약력: 한 줄에 하나씩. 저장하면 치과 탭 이름 바로 아래에 보임
+function BioEditor({ fb }: { fb: FirebaseServices }) {
+  const [bio, setBio] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    loadSettings({ fresh: true }).then((s) => setBio(s.dentalBio));
+  }, []);
+
+  if (bio === null) return <p className="mt-8 text-stone-400">불러오는 중…</p>;
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("saving");
+    const cleaned = bio
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .join("\n");
+    try {
+      await setDoc(doc(fb.db, ...SETTINGS_DOC), { dentalBio: cleaned }, { merge: true });
+      setBio(cleaned);
+      setStatus("saved");
+    } catch (err) {
+      setError(errorMessage(err));
+      setStatus("error");
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+      <p className="text-sm text-stone-500">
+        치과 탭 이름 바로 아래에 보이는 약력이에요. 한 줄에 하나씩 쓰고, 앞에 연도를 쓰면 왼쪽에 따로 보여요. 비워 두면 표시되지 않아요.
+      </p>
+      <Field label="약력" hint="예: 2015 ○○대학교 치의학대학원 졸업 / 2020 – 현재 ○○치과 원장">
+        <textarea
+          id="dental-bio"
+          rows={10}
+          value={bio}
+          onChange={(e) => {
+            setBio(e.target.value);
+            setStatus("idle");
+          }}
+          className={`${inputClass} leading-relaxed`}
+        />
+      </Field>
+      <div className="flex items-center justify-end gap-4">
+        {status === "saved" && <span className="text-sm text-stone-600">저장했어요. 사이트에 바로 반영돼요.</span>}
+        {status === "error" && <span className="text-sm text-red-700">{error}</span>}
+        <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+          {status === "saving" ? "저장 중…" : "저장"}
+        </button>
+      </div>
+    </form>
   );
 }

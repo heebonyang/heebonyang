@@ -62,11 +62,39 @@ function Section({ tab, eyebrow, title, children }: { tab: Tab; eyebrow: string;
   );
 }
 
+// 약력 한 줄: "2015 ○○대학교 치의학대학원 졸업"처럼 앞에 연도(기간)가 있으면 왼쪽 칸에 따로 보여 줌
+function splitBioLine(line: string) {
+  const m = line.match(/^(\d{4}(?:[.\d]*)?(?:\s*[~–—-]\s*(?:\d{4}(?:[.\d]*)?|현재)?)?)\s+(.+)$/);
+  return m ? { when: m[1], what: m[2] } : { when: "", what: line };
+}
+
+function DentalBio({ bio }: { bio: string }) {
+  const lines = bio.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lines.length === 0) return null;
+  return (
+    <Section tab="dental" eyebrow="Profile" title="약력">
+      <ul className="rounded-2xl border border-stone-200 bg-white divide-y divide-stone-200">
+        {lines.map((line, i) => {
+          const { when, what } = splitBioLine(line);
+          return (
+            <li key={i} className="grid gap-1 sm:grid-cols-[160px_1fr] sm:gap-6 px-5 py-4">
+              <span className={`text-sm font-semibold text-brand-blue tabular-nums ${when ? "" : "hidden sm:block"}`}>{when}</span>
+              <span className="text-stone-900">{what}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </Section>
+  );
+}
+
 function DentalPanel() {
   const settings = useSiteSettings();
   return (
     <>
       <Hero tab="dental" {...DENTAL} tagline={settings?.dentalTagline} />
+      {/* 약력은 이름 바로 아래, 가장 먼저 보이는 자리 */}
+      {settings && <DentalBio bio={settings.dentalBio} />}
       <Section tab="dental" eyebrow="Clinic" title="진료 안내">
         <dl className="grid gap-4 sm:grid-cols-3">
           {DENTAL.items.map((item) => (

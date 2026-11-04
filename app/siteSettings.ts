@@ -20,6 +20,8 @@ export type SiteSettings = {
   // 0집 CD 남은 수량 / 전체 수량 (관리자 페이지 '0집 CD'에서 관리)
   albumStock: number;
   albumTotal: number;
+  // 치과 탭 약력 (관리자 페이지 '약력'에서 관리). 한 줄에 하나씩, 앞에 연도를 쓰면 왼쪽에 따로 보임
+  dentalBio: string;
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
@@ -29,6 +31,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   musicLinks: [{ name: "Melon", url: "https://www.melon.com/artist/timeline.htm?artistId=869278" }],
   albumStock: ALBUM0.stock,
   albumTotal: ALBUM0.total,
+  dentalBio: "",
 };
 
 export const SETTINGS_DOC = ["settings", "site"] as const;
