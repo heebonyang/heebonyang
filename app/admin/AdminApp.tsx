@@ -1194,9 +1194,9 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
                 aria-pressed={!!g.liked}
                 aria-label={g.liked ? "하트 취소" : "하트 남기기"}
                 title={g.liked ? "하트 취소" : "하트 남기기"}
-                className={`self-start ${g.liked ? "text-rose-600" : "text-stone-300 hover:text-rose-600"}`}
+                className={`self-start grid place-items-center w-10 h-10 -my-1 rounded-full hover:bg-rose-50 ${g.liked ? "text-rose-600" : "text-stone-300 hover:text-rose-600"}`}
               >
-                <HeartIcon filled={!!g.liked} />
+                <HeartIcon filled={!!g.liked} size={26} />
               </button>
               <ConfirmButton label="삭제" onConfirm={() => remove("guestbook", g.id, "방명록 글")} />
             </li>

@@ -108,9 +108,9 @@ function DeleteControl({ id, onDeleted }: { id: string; onDeleted: () => void })
   );
 }
 
-export function HeartIcon({ filled = false }: { filled?: boolean }) {
+export function HeartIcon({ filled = false, size = 16 }: { filled?: boolean; size?: number }) {
   return (
-    <svg viewBox="0 0 24 24" width="16" height="16" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" aria-hidden>
+    <svg viewBox="0 0 24 24" width={size} height={size} fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" aria-hidden>
       <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z" strokeLinejoin="round" />
     </svg>
   );
@@ -215,17 +215,20 @@ export default function Guestbook() {
                       <span className={`font-semibold ${nameColor(entry.id)}`}>{entry.name}</span>
                       <span className="ml-2 text-sm text-stone-400 tabular-nums">{formatDate(entry.createdAt)}</span>
                     </span>
-                    <DeleteControl id={entry.id} onDeleted={() => setEntries((list) => list?.filter((x) => x.id !== entry.id))} />
+                    <span className="flex items-center gap-3">
+                      <DeleteControl id={entry.id} onDeleted={() => setEntries((list) => list?.filter((x) => x.id !== entry.id))} />
+                      {/* 홈페이지 주인이 관리자 페이지에서 남긴 하트 */}
+                      {entry.liked && (
+                        <span className="text-rose-600" role="img" aria-label="양희본의 하트">
+                          <HeartIcon filled size={20} />
+                        </span>
+                      )}
+                    </span>
                   </div>
                   <p className="mt-2 text-[15px] leading-relaxed text-stone-800 whitespace-pre-wrap break-words">
                     {entry.message}
                   </p>
-                  {entry.liked && (
-                    <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-rose-600">
-                      <HeartIcon filled />
-                      양희본이 하트를 남겼어요
-                    </p>
-                  )}
+
                 </div>
               </li>
             ))}
