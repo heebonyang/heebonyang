@@ -216,13 +216,13 @@ export default function Guestbook() {
                       <span className="ml-2 text-sm text-stone-400 tabular-nums">{formatDate(entry.createdAt)}</span>
                     </span>
                     <span className="flex items-center gap-3">
-                      <DeleteControl id={entry.id} onDeleted={() => setEntries((list) => list?.filter((x) => x.id !== entry.id))} />
-                      {/* 홈페이지 주인이 관리자 페이지에서 남긴 하트 */}
+                      {/* 홈페이지 주인이 관리자 페이지에서 남긴 하트 (삭제 왼쪽) */}
                       {entry.liked && (
                         <span className="text-rose-600" role="img" aria-label="양희본의 하트">
-                          <HeartIcon filled size={20} />
+                          <HeartIcon filled size={26} />
                         </span>
                       )}
+                      <DeleteControl id={entry.id} onDeleted={() => setEntries((list) => list?.filter((x) => x.id !== entry.id))} />
                     </span>
                   </div>
                   <p className="mt-2 text-[15px] leading-relaxed text-stone-800 whitespace-pre-wrap break-words">
