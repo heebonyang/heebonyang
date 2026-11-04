@@ -186,8 +186,11 @@ function Discography({
 
   return (
     <section className="mt-20 py-14 border-t border-stone-200">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold text-stone-900">발매곡</h2>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">Original</p>
+          <h2 className="mt-2 text-2xl font-bold text-stone-900">발매곡</h2>
+        </div>
         <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
           {(["solo", "team"] as const).map((c) => (
             <button
@@ -249,7 +252,7 @@ function Demos() {
   return (
     <section className="py-14 border-t border-stone-200">
       <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">Demo</p>
-      <h2 className="mt-2 text-xl font-bold text-stone-900">미발매곡</h2>
+      <h2 className="mt-2 text-2xl font-bold text-stone-900">미발매곡</h2>
       <p className="mt-1 text-sm text-stone-500">아직 발매하지 않은 곡들을 먼저 들려드려요.</p>
       <ul className="mt-6 grid gap-3">
         {demos.map((d) => (
