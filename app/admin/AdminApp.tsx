@@ -434,7 +434,7 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
     try {
       await setDoc(
         doc(fb.db, ...SETTINGS_DOC),
-        { musicTagline: draft.musicTagline.trim(), dentalTagline: draft.dentalTagline.trim() },
+        { musicTagline: draft.musicTagline.trim(), dentalTagline: draft.dentalTagline.trim(), loungeTagline: draft.loungeTagline.trim() },
         { merge: true },
       );
       setStatus("saved");
@@ -447,7 +447,7 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
   return (
     <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
       <p className="text-sm text-stone-500">각 탭 맨 위, 이름 옆에 보이는 한 줄 소개예요. 비워 두면 표시되지 않아요.</p>
-      <Field label="음악 탭" hint="싱어송라이터 양희본 옆">
+      <Field label="음악 탭" hint="양희본 싱어송라이터 옆">
         <input
           id="heading-music"
           value={draft.musicTagline}
@@ -459,12 +459,24 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
           className={inputClass}
         />
       </Field>
-      <Field label="치과 탭" hint="치과의사 양희본 옆">
+      <Field label="치과 탭" hint="양희본 치과의사 옆">
         <input
           id="heading-dental"
           value={draft.dentalTagline}
           onChange={(e) => {
             setDraft({ ...draft, dentalTagline: e.target.value });
+            setStatus("idle");
+          }}
+          maxLength={80}
+          className={inputClass}
+        />
+      </Field>
+      <Field label="라운지 탭" hint="라운지 옆">
+        <input
+          id="heading-lounge"
+          value={draft.loungeTagline}
+          onChange={(e) => {
+            setDraft({ ...draft, loungeTagline: e.target.value });
             setStatus("idle");
           }}
           maxLength={80}

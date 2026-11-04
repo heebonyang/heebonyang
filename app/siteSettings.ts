@@ -16,6 +16,7 @@ export type MusicLink = {
 export type SiteSettings = {
   musicTagline: string;
   dentalTagline: string;
+  loungeTagline: string;
   musicLinks: MusicLink[];
   // 0집 CD 남은 수량 / 전체 수량 (관리자 페이지 '0집 CD'에서 관리)
   albumStock: number;
@@ -27,6 +28,7 @@ export type SiteSettings = {
 export const DEFAULT_SETTINGS: SiteSettings = {
   musicTagline: "일상의 이야기를 노래로 만듭니다.",
   dentalTagline: "환자의 이야기를 먼저 듣는 진료를 합니다.",
+  loungeTagline: "소식을 전하고, 이야기를 나누는 곳이에요.",
   // 관리자 페이지에서 한 번도 저장하지 않았을 때 보여주는 기본 링크
   musicLinks: [{ name: "Melon", url: "https://www.melon.com/artist/timeline.htm?artistId=869278" }],
   albumStock: ALBUM0.stock,
