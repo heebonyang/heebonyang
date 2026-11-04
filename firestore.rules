@@ -31,6 +31,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // 미발매곡(데모) 목록
+    match /demos/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 관리자 페이지에서 올린 음원 파일 (900KB 조각으로 나눠 저장, app/audioStore.ts)
+    match /audioFiles/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+      match /chunks/{part} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+    }
+
     // 방명록: 누구나 이름·비밀번호를 정해 글을 남기고, 같은 비밀번호로 자기 글을 지울 수 있음.
     // 비밀번호는 브라우저에서 해시로 바꾼 값만 guestbookKeys에 저장하고, 이 컬렉션은 아무도 읽을 수 없음.
     match /guestbook/{id} {

@@ -39,17 +39,3 @@ jobs:
             exit 0
           fi
           exit $status
-      # 음원 저장소 보안 규칙(storage.rules)도 함께 반영
-      # (Firebase 콘솔에서 Storage를 아직 시작하지 않았으면 실패해도 배포는 계속됨)
-      - name: Deploy Storage rules
-        continue-on-error: true
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          NO_COLOR: "1"
-        run: |
-          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
-          status=0
-          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" npx --yes firebase-tools@15 deploy --only storage --project heebonyang --non-interactive || status=$?
-          rm -f "$RUNNER_TEMP/sa.json"
-          if [ $status -ne 0 ]; then echo "::warning::Storage 규칙을 반영하지 못했어요. Firebase 콘솔에서 Storage를 시작했는지 확인하세요."; fi
-          exit $status

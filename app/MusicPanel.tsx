@@ -4,6 +4,8 @@ import { MUSIC_PROFILE, type Release, type Team } from "./music";
 import { useMusicData } from "./musicData";
 import AlbumBanner from "./AlbumBanner";
 import RolePill from "./RolePill";
+import AudioPlayer from "./AudioPlayer";
+import { useDemos } from "./demos";
 import { useSiteSettings, type MusicLink } from "./siteSettings";
 
 type Category = "solo" | "team";
@@ -54,9 +56,7 @@ function Featured({ release, index, isLatest }: { release: Release; index: numbe
 
         {release.audio && (
           // key: 다른 음원을 고르면 플레이어를 새로 만들어 이전 곡 재생을 멈춤
-          <audio key={release.audio} controls preload="none" src={release.audio} className="mt-6 w-full">
-            브라우저가 오디오 재생을 지원하지 않아요.
-          </audio>
+          <AudioPlayer key={release.audio} src={release.audio} className="mt-6" />
         )}
 
         <ol className="mt-6 border-t border-stone-200">
@@ -242,6 +242,30 @@ function Discography({
   );
 }
 
+// 미발매곡(데모): 관리자 페이지에서 올린 곡이 있을 때만 보임
+function Demos() {
+  const demos = useDemos();
+  if (!demos || demos.length === 0) return null;
+  return (
+    <section className="py-14 border-t border-stone-200">
+      <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">Demo</p>
+      <h2 className="mt-2 text-xl font-bold text-stone-900">미발매곡</h2>
+      <p className="mt-1 text-sm text-stone-500">아직 발매하지 않은 곡들을 먼저 들려드려요.</p>
+      <ul className="mt-6 grid gap-3">
+        {demos.map((d) => (
+          <li key={d.id} className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center rounded-2xl border border-stone-200 bg-white p-5">
+            <div className="min-w-0">
+              <p className="font-semibold text-stone-900">{d.title}</p>
+              {d.note && <p className="mt-1 text-sm text-stone-500 whitespace-pre-wrap">{d.note}</p>}
+            </div>
+            <AudioPlayer src={d.audio} className="sm:min-w-72" />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export default function MusicPanel() {
   const data = useMusicData();
   const settings = useSiteSettings();
@@ -287,6 +311,8 @@ export default function MusicPanel() {
           <Discography releases={releases} teams={data.teams} selected={selected} onChoose={choose} />
         </>
       )}
+
+      <Demos />
 
       <section className="py-14 border-t border-stone-200">
         <div>

@@ -5,6 +5,8 @@ import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signO
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore/lite";
 import { getFirebase, type FirebaseServices } from "../firebase";
 import AudioUpload from "./AudioUpload";
+import { deleteAudio } from "../audioStore";
+import { loadDemos, type Demo } from "../demos";
 import { loadMusic } from "../musicData";
 import { formatDate, loadGuestbook, type GuestbookEntry } from "../Guestbook";
 import { Cover } from "../MusicPanel";
@@ -12,9 +14,9 @@ import { RELEASES, type Release, type Team } from "../music";
 import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
 import { loadSettings, SETTINGS_DOC, type MusicLink, type SiteSettings } from "../siteSettings";
 
-type Section = "headings" | "links" | "album" | "releases" | "teams" | "notices" | "guestbook";
+type Section = "headings" | "links" | "album" | "releases" | "demos" | "teams" | "notices" | "guestbook";
 
-const SECTION_LABELS: Record<Section, string> = { headings: "머리글", links: "링크", album: "0집 CD", releases: "음원", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
+const SECTION_LABELS: Record<Section, string> = { headings: "머리글", links: "링크", album: "0집 CD", releases: "음원", demos: "데모", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
 
 const RELEASE_TYPES: Release["type"][] = ["싱글", "EP", "정규"];
 
@@ -875,8 +877,11 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
     const { id, ...data } = r;
     if (!data.cover) delete data.cover;
     if (!data.audio?.trim()) delete data.audio;
+    const oldAudio = id ? releases.find((x) => x.id === id)?.audio : undefined;
     if (id) await setDoc(doc(fb.db, "releases", id), data);
     else await addDoc(collection(fb.db, "releases"), data);
+    // 음원 파일을 바꾸거나 뺐으면 예전 파일은 지움 (데이터베이스에 올린 파일만)
+    if (oldAudio && oldAudio !== data.audio) await deleteAudio(fb, oldAudio).catch(() => {});
     await done(`'${r.title}'을(를) 저장했어요.`);
   };
 
@@ -1033,7 +1038,13 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
                 <button onClick={() => setEditing({ kind: "release", value: r })} className="text-sm text-stone-700 hover:underline">
                   수정
                 </button>
-                <ConfirmButton label="삭제" onConfirm={() => remove("releases", r.id!, `'${r.title}'`)} />
+                <ConfirmButton
+                  label="삭제"
+                  onConfirm={async () => {
+                    await remove("releases", r.id!, `'${r.title}'`);
+                    await deleteAudio(fb, r.audio).catch(() => {});
+                  }}
+                />
               </li>
             ))}
           </ul>
@@ -1133,6 +1144,8 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
 
       {section === "headings" && <HeadingsEditor fb={fb} />}
 
+      {section === "demos" && <DemosManager fb={fb} />}
+
       {section === "links" && <LinksManager fb={fb} />}
 
       {section === "album" && <AlbumStockEditor fb={fb} />}
@@ -1224,6 +1237,157 @@ export default function AdminApp() {
           </>
         )}
       </main>
+    </div>
+  );
+}
+
+// 미발매곡(데모): 제목·메모·음원 파일. 음악 탭 '미발매곡'에 이 순서대로 보임
+function DemoEditor({
+  fb,
+  initial,
+  onSave,
+  onCancel,
+}: {
+  fb: FirebaseServices;
+  initial: Demo;
+  onSave: (d: Demo) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [draft, setDraft] = useState<Demo>(initial);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!draft.audio) {
+      setError("음원 파일을 올려 주세요.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    try {
+      await onSave({ ...draft, title: draft.title.trim(), note: draft.note?.trim() });
+    } catch (err) {
+      setError(errorMessage(err));
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-6">
+      <Field label="제목">
+        <input id="demo-title" required value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className={inputClass} />
+      </Field>
+      <Field label="메모" hint="선택 · 예: 2026년 가을 작업 중">
+        <textarea id="demo-note" rows={2} value={draft.note ?? ""} onChange={(e) => setDraft({ ...draft, note: e.target.value })} className={inputClass} />
+      </Field>
+      <div className="grid gap-1.5 min-w-0">
+        <span className="text-sm text-stone-600">음원 파일</span>
+        <AudioUpload fb={fb} value={draft.audio} onChange={(audio) => setDraft({ ...draft, audio })} />
+      </div>
+      {error && <p className="text-sm text-red-700">{error}</p>}
+      <div className="flex justify-end gap-2">
+        <button type="button" onClick={onCancel} className="px-4 py-2 rounded-full border border-stone-300 text-sm">
+          취소
+        </button>
+        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+          {saving ? "저장 중…" : "저장"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function DemosManager({ fb }: { fb: FirebaseServices }) {
+  const [demos, setDemos] = useState<Demo[] | null>(null);
+  const [editing, setEditing] = useState<Demo | null>(null);
+  const [message, setMessage] = useState("");
+
+  const reload = useCallback(async () => setDemos(await loadDemos()), []);
+  useEffect(() => {
+    reload();
+  }, [reload]);
+
+  if (!demos) return <p className="mt-8 text-stone-400">불러오는 중…</p>;
+
+  const save = async (d: Demo) => {
+    const { id, ...data } = d;
+    if (!data.note) delete data.note;
+    const old = id ? demos.find((x) => x.id === id)?.audio : undefined;
+    if (id) await setDoc(doc(fb.db, "demos", id), data);
+    else await addDoc(collection(fb.db, "demos"), { ...data, order: demos.length });
+    if (old && old !== data.audio) await deleteAudio(fb, old).catch(() => {});
+    setEditing(null);
+    setMessage(`'${d.title}'을(를) 저장했어요.`);
+    await reload();
+  };
+
+  const move = async (index: number, delta: -1 | 1) => {
+    const target = index + delta;
+    if (target < 0 || target >= demos.length) return;
+    const next = [...demos];
+    [next[index], next[target]] = [next[target], next[index]];
+    setDemos(next.map((d, i) => ({ ...d, order: i })));
+    try {
+      const batch = writeBatch(fb.db);
+      next.forEach((d, i) => batch.set(doc(fb.db, "demos", d.id!), { order: i }, { merge: true }));
+      await batch.commit();
+    } catch (e) {
+      setMessage(errorMessage(e));
+      await reload();
+    }
+  };
+
+  const remove = async (d: Demo) => {
+    try {
+      await deleteDoc(doc(fb.db, "demos", d.id!));
+      await deleteAudio(fb, d.audio).catch(() => {});
+      setMessage(`'${d.title}'을(를) 삭제했어요.`);
+      await reload();
+    } catch (e) {
+      setMessage(errorMessage(e));
+    }
+  };
+
+  return (
+    <div className="mt-8 grid gap-6">
+      {message && <p className="text-sm text-stone-600">{message}</p>}
+      {editing ? (
+        <DemoEditor key={editing.id ?? "new"} fb={fb} initial={editing} onSave={save} onCancel={() => setEditing(null)} />
+      ) : (
+        <button onClick={() => setEditing({ title: "", audio: "" })} className="w-fit px-5 py-2 rounded-full bg-stone-900 text-white text-sm">
+          + 새 데모 추가
+        </button>
+      )}
+      <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+        {demos.length === 0 && <li className="p-5 text-stone-500">아직 올린 데모가 없어요. 데모가 없으면 음악 탭에도 보이지 않아요.</li>}
+        {demos.map((d, i) => (
+          <li key={d.id} className="flex items-center gap-4 p-4">
+            <div className="flex flex-col">
+              <button onClick={() => move(i, -1)} disabled={i === 0} aria-label={`${d.title} 위로`} className="px-2 text-stone-500 hover:text-stone-900 disabled:opacity-25">
+                ▲
+              </button>
+              <button
+                onClick={() => move(i, 1)}
+                disabled={i === demos.length - 1}
+                aria-label={`${d.title} 아래로`}
+                className="px-2 text-stone-500 hover:text-stone-900 disabled:opacity-25"
+              >
+                ▼
+              </button>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-stone-900">{d.title}</p>
+              {d.note && <p className="text-sm text-stone-500 truncate">{d.note}</p>}
+            </div>
+            <button onClick={() => setEditing(d)} className="text-sm text-stone-700 hover:underline">
+              수정
+            </button>
+            <ConfirmButton label="삭제" onConfirm={() => remove(d)} />
+          </li>
+        ))}
+      </ul>
+      <p className="text-sm text-stone-500">MP3, 한 곡 15MB 이하. ▲ ▼로 순서를 바꾸면 음악 탭에도 같은 순서로 보여요.</p>
     </div>
   );
 }
