@@ -23,6 +23,8 @@ export default function AudioPlayer({ src, className = "" }: { src: string; clas
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  // 파형 위에 마우스를 올린 위치 (0~1). 세로 선과 그 앞까지 옅은 색으로 보여 줌
+  const [hover, setHover] = useState<number | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -113,15 +115,27 @@ export default function AudioPlayer({ src, className = "" }: { src: string; clas
           aria-valuetext={`${fmt(time)} / ${fmt(duration)}`}
           onClick={seek}
           onKeyDown={seekKey}
-          className={`flex-1 min-w-0 flex items-center gap-[2px] h-10 ${duration ? "cursor-pointer" : ""}`}
+          onMouseMove={(e) => {
+            if (!duration) return;
+            const r = e.currentTarget.getBoundingClientRect();
+            setHover(Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)));
+          }}
+          onMouseLeave={() => setHover(null)}
+          className={`relative flex-1 min-w-0 flex items-center gap-[2px] h-10 ${duration ? "cursor-pointer" : ""}`}
         >
-          {bars.map((v, i) => (
-            <span
-              key={i}
-              className={`flex-1 rounded-full transition-colors ${(i + 0.5) / bars.length <= played ? "bg-amber-700" : "bg-stone-300"}`}
-              style={{ height: `${Math.max(8, v * 100)}%` }}
-            />
-          ))}
+          {bars.map((v, i) => {
+            const at = (i + 0.5) / bars.length;
+            const color = at <= played ? "bg-amber-700" : hover !== null && at <= hover ? "bg-amber-700/40" : "bg-stone-300";
+            return <span key={i} className={`flex-1 rounded-full ${color}`} style={{ height: `${Math.max(8, v * 100)}%` }} />;
+          })}
+          {hover !== null && (
+            <span className="pointer-events-none absolute inset-y-0" style={{ left: `${hover * 100}%` }} aria-hidden>
+              <span className="absolute inset-y-0 -translate-x-1/2 w-px bg-stone-900" />
+              <span className="absolute -top-5 -translate-x-1/2 rounded bg-stone-900 px-1.5 text-[10px] leading-4 text-white tabular-nums">
+                {fmt(hover * duration)}
+              </span>
+            </span>
+          )}
         </div>
         <span className="shrink-0 w-[4.5rem] text-right text-xs text-stone-500 tabular-nums">
           {fmt(time)} / {fmt(duration)}
