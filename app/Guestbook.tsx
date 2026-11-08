@@ -133,15 +133,16 @@ export function formatDate(ts: Timestamp | null) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// 이름 색: 무지개 7색(빨주노초파남보) 중 글 번호로 무작위 선택. 새로고침해도 같은 글은 같은 색
+// 이름 색: 동틀 녘 하늘에서 고른 7가지 색 중 글 번호로 무작위 선택. 새로고침해도 같은 글은 같은 색
+// (은은하지만 밝은 바탕에서 또렷하게 읽히는 진하기)
 const NAME_COLORS = [
-  "text-red-600",
-  "text-orange-500",
-  "text-yellow-600",
-  "text-green-600",
-  "text-blue-600",
-  "text-indigo-700",
-  "text-violet-600",
+  "text-[#B0455F]", // 장밋빛 노을
+  "text-[#B35E2E]", // 살구빛
+  "text-[#8A6A12]", // 새벽 금빛
+  "text-[#3D7356]", // 이른 숲
+  "text-[#2F6596]", // 새벽 하늘
+  "text-[#45479A]", // 남빛
+  "text-[#7A4796]", // 보랏빛
 ];
 
 // 색을 다시 섞고 싶으면 이 숫자만 바꾸면 됨
