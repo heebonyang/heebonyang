@@ -12,6 +12,8 @@ export const ALBUM0 = {
   support: "이 CD를 구매해 주시면 다음 앨범 제작에 큰 힘이 됩니다.",
   orderForm: "https://docs.google.com/forms/d/1ZVe9iBWmSI_Enf1Es3uW0Jdx5yBZcYZkzLDJ96Ru2QY/viewform",
   bank: { name: "신한은행", account: "957-06-111158", holder: "양희본" },
+  // 0집 소개 페이지 (광안리 100일 라이브, 공연 소식)
+  storyUrl: "https://heebonmd.web.app",
 };
 // ────────────────────────────────────────────────────────────────
 
