@@ -57,15 +57,15 @@ export default function ShopPage() {
                 <li className="flex gap-4">
                   <span className="shrink-0 grid place-items-center w-7 h-7 rounded-full bg-stone-900 text-white text-sm">1</span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-stone-900">구매 신청서를 작성해 주세요</p>
-                    <p className="mt-1 text-sm text-stone-500">구글 폼으로 연결돼요.</p>
+                    <p className="font-medium text-stone-900">주문서를 작성해 주세요</p>
+                    <p className="mt-1 text-sm text-stone-500">0집 페이지의 주문서로 연결돼요. 주문을 마치면 입금할 금액을 알려드려요.</p>
                     <a
                       href={ALBUM0.orderForm}
                       target="_blank"
                       rel="noreferrer"
                       className="mt-3 inline-block px-5 py-2.5 rounded-full bg-stone-900 text-white text-sm hover:bg-stone-700"
                     >
-                      구매 신청서 작성하기
+                      주문서 작성하기
                     </a>
                   </div>
                 </li>

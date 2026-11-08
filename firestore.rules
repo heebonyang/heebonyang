@@ -47,6 +47,35 @@ service cloud.firestore {
       }
     }
 
+    // 0집 CD 주문 (계좌이체). 누구나 주문서를 낼 수 있지만, 주문 목록을 보거나 바꾸는 건 관리자만.
+    // 주문서는 0집 페이지(heebonmd.web.app)에서 Firestore REST로 저장됨. 입금 확인 시 관리자 페이지에서 남은 수량을 줄임.
+    match /orders/{id} {
+      allow read, update, delete: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(["name", "phone", "address", "qty", "depositor", "memo", "source", "status", "createdAt", "agree"])
+        && request.resource.data.keys().hasAll(["name", "phone", "address", "qty", "depositor", "memo", "source", "status", "createdAt", "agree"])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 30
+        && request.resource.data.phone is string
+        && request.resource.data.phone.matches("^[0-9][0-9-]{8,13}$")
+        && request.resource.data.address is string
+        && request.resource.data.address.size() >= 5
+        && request.resource.data.address.size() <= 200
+        && request.resource.data.qty is int
+        && request.resource.data.qty >= 1
+        && request.resource.data.qty <= 10
+        && request.resource.data.qty <= get(/databases/$(database)/documents/settings/site).data.albumStock
+        && request.resource.data.depositor is string
+        && request.resource.data.depositor.size() > 0
+        && request.resource.data.depositor.size() <= 30
+        && request.resource.data.memo is string
+        && request.resource.data.memo.size() <= 300
+        && request.resource.data.source in ["md", "shop"]
+        && request.resource.data.status == "new"
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.agree == true;
+    }
+
     // 방명록: 누구나 이름·비밀번호를 정해 글을 남기고, 같은 비밀번호로 자기 글을 지울 수 있음.
     // 비밀번호는 브라우저에서 해시로 바꾼 값만 guestbookKeys에 저장하고, 이 컬렉션은 아무도 읽을 수 없음.
     match /guestbook/{id} {

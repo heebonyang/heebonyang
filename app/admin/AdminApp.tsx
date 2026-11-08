@@ -5,6 +5,7 @@ import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signO
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore/lite";
 import { getFirebase, type FirebaseServices } from "../firebase";
 import AudioUpload from "./AudioUpload";
+import OrdersManager from "./OrdersManager";
 import { deleteAudio } from "../audioStore";
 import { loadDemos, type Demo } from "../demos";
 import { loadMusic } from "../musicData";
@@ -13,9 +14,9 @@ import { RELEASES, type Release, type Team } from "../music";
 import { loadNotices, STATIC_NOTICES, type Notice } from "../notices";
 import { loadSettings, SETTINGS_DOC, type InfoItem, type MusicLink, type SiteSettings } from "../siteSettings";
 
-type Section = "headings" | "bio" | "clinic" | "links" | "album" | "releases" | "demos" | "teams" | "notices" | "guestbook";
+type Section = "headings" | "bio" | "clinic" | "links" | "album" | "orders" | "releases" | "demos" | "teams" | "notices" | "guestbook";
 
-const SECTION_LABELS: Record<Section, string> = { headings: "머리글", bio: "치과 약력", clinic: "치과 정보", links: "링크", album: "0집 CD", releases: "음원", demos: "데모", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
+const SECTION_LABELS: Record<Section, string> = { headings: "머리글", bio: "치과 약력", clinic: "치과 정보", links: "링크", album: "0집 CD", orders: "0집 주문", releases: "음원", demos: "데모", teams: "팀 프로젝트", notices: "공지", guestbook: "방명록" };
 
 const RELEASE_TYPES: Release["type"][] = ["싱글", "EP", "정규"];
 
@@ -993,7 +994,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
 
   return (
     <div>
-      <div role="tablist" className="flex gap-1 p-1 w-fit rounded-full border border-stone-200 bg-white text-sm">
+      <div role="tablist" className="flex flex-wrap gap-1 p-1 w-fit rounded-full border border-stone-200 bg-white text-sm">
         {(Object.keys(SECTION_LABELS) as Section[]).map((s) => (
           <button
             key={s}
@@ -1175,6 +1176,8 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
       {section === "links" && <LinksManager fb={fb} />}
 
       {section === "album" && <AlbumStockEditor fb={fb} />}
+
+      {section === "orders" && <OrdersManager fb={fb} />}
 
       {section === "guestbook" && (
         <ul className="mt-8 divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
