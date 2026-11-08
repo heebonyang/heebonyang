@@ -90,10 +90,10 @@ export default function AudioPlayer({ src, className = "" }: { src: string; clas
           onClick={toggle}
           disabled={state === "loading"}
           aria-label={playing ? "일시정지" : "재생"}
-          className="shrink-0 grid place-items-center w-11 h-11 rounded-full bg-stone-900 text-stone-50 hover:bg-stone-700 disabled:opacity-60"
+          className="shrink-0 grid place-items-center w-11 h-11 rounded-full bg-stone-900 text-white hover:bg-stone-700 disabled:opacity-60"
         >
           {state === "loading" ? (
-            <span className="w-4 h-4 rounded-full border-2 border-stone-50/40 border-t-stone-50 animate-spin" aria-hidden />
+            <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" aria-hidden />
           ) : playing ? (
             <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden>
               <rect x="3.5" y="2.5" width="3" height="11" rx="1" />
@@ -131,7 +131,7 @@ export default function AudioPlayer({ src, className = "" }: { src: string; clas
           {hover !== null && (
             <span className="pointer-events-none absolute inset-y-0" style={{ left: `${hover * 100}%` }} aria-hidden>
               <span className="absolute inset-y-0 -translate-x-1/2 w-px bg-stone-900" />
-              <span className="absolute -top-5 -translate-x-1/2 rounded bg-stone-900 px-1.5 text-[10px] leading-4 text-stone-50 tabular-nums">
+              <span className="absolute -top-5 -translate-x-1/2 rounded bg-stone-900 px-1.5 text-[10px] leading-4 text-white tabular-nums">
                 {fmt(hover * duration)}
               </span>
             </span>

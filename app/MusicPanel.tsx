@@ -11,14 +11,13 @@ import { useSiteSettings, type MusicLink } from "./siteSettings";
 type Category = "solo" | "team";
 
 // 커버 이미지가 없을 때 쓰는 임시 커버 색 (발매 순서대로 돌아가며 사용)
-// 0집 표지 파랑에서 동틀 녘 살구빛으로 넘어가는 하늘 색
 const PLACEHOLDER_TONES = [
-  "from-[#1A4A9C] to-[#8FB0E0]",
-  "from-[#163A7A] to-[#E3A28F]",
-  "from-[#24518F] to-[#B9CBEA]",
-  "from-[#1F3F7A] to-[#E8B4A0]",
-  "from-[#2A5AA8] to-[#F0C9A8]",
-  "from-[#173068] to-[#9DB4D8]",
+  "from-stone-800 to-stone-600",
+  "from-amber-900 to-amber-700",
+  "from-slate-700 to-slate-500",
+  "from-stone-500 to-stone-400",
+  "from-neutral-800 to-amber-900",
+  "from-zinc-600 to-zinc-400",
 ];
 
 export function Cover({ release, index, large = false }: { release: Release; index: number; large?: boolean }) {
@@ -41,7 +40,7 @@ export function Cover({ release, index, large = false }: { release: Release; ind
 function Featured({ release, index, isLatest }: { release: Release; index: number; isLatest: boolean }) {
   return (
     <div className="grid gap-8 md:grid-cols-2 md:gap-12 items-center">
-      <div className="overflow-hidden rounded-2xl shadow-2xl shadow-black/50">
+      <div className="overflow-hidden rounded-2xl shadow-2xl shadow-stone-400/40">
         <Cover release={release} index={index} large />
       </div>
 
@@ -107,7 +106,7 @@ function MusicLinks({ links }: { links: MusicLink[] }) {
           rel="noreferrer"
           aria-label={link.name}
           title={link.name}
-          className={`group inline-flex items-center gap-1.5 rounded-full px-2 py-1 transition-colors hover:bg-card ${
+          className={`group inline-flex items-center gap-1.5 rounded-full px-2 py-1 transition-colors hover:bg-white ${
             link.logo ? "" : link.name.toLowerCase() === "melon" ? "text-stone-500 hover:text-[#00cd3c]" : "text-stone-500 hover:text-stone-900"
           }`}
         >
@@ -192,7 +191,7 @@ function Discography({
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">Original</p>
           <h2 className="mt-2 text-2xl font-bold text-stone-900">발매곡</h2>
         </div>
-        <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-card text-sm">
+        <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
           {(["solo", "team"] as const).map((c) => (
             <button
               key={c}
@@ -200,7 +199,7 @@ function Discography({
               aria-selected={category === c}
               onClick={() => setCategory(c)}
               className={`px-4 py-1.5 rounded-full tabular-nums ${
-                category === c ? "bg-stone-900 text-stone-50" : "text-stone-500 hover:text-stone-900"
+                category === c ? "bg-stone-900 text-white" : "text-stone-500 hover:text-stone-900"
               }`}
             >
               {c === "solo" ? `솔로 ${soloCount}` : `팀 프로젝트 ${releases.length - soloCount}`}
@@ -257,7 +256,7 @@ function Demos() {
       <p className="mt-1 text-sm text-stone-500">아직 발매하지 않은 곡들을 먼저 들려드려요.</p>
       <ul className="mt-6 grid gap-3">
         {demos.map((d) => (
-          <li key={d.id} className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center rounded-2xl border border-stone-200 bg-card p-5">
+          <li key={d.id} className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center rounded-2xl border border-stone-200 bg-white p-5">
             <div className="min-w-0">
               <p className="font-semibold text-stone-900">{d.title}</p>
               {d.note && <p className="mt-1 text-sm text-stone-500 whitespace-pre-wrap">{d.note}</p>}

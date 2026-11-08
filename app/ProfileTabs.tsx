@@ -20,9 +20,9 @@ type Tab = "music" | "dental" | "lounge";
 const TAB_LABELS: Record<Tab, string> = { music: "음악", dental: "치과", lounge: "라운지" };
 
 const THEME = {
-  music:  { eyebrow: "text-brand-red",   active: "bg-brand-red text-stone-50" },
-  dental: { eyebrow: "text-brand-blue",  active: "bg-brand-blue text-stone-50" },
-  lounge: { eyebrow: "text-brand-green", active: "bg-brand-green text-stone-50" },
+  music:  { eyebrow: "text-brand-red",   active: "bg-brand-red text-white" },
+  dental: { eyebrow: "text-brand-blue",  active: "bg-brand-blue text-white" },
+  lounge: { eyebrow: "text-brand-green", active: "bg-brand-green text-white" },
 };
 
 // tagline(머리글)은 관리자 페이지 '머리글'에서 수정
@@ -107,7 +107,7 @@ function DentalPanel() {
         <Section tab="dental" eyebrow="Clinic" title="진료 안내">
           <dl className="grid gap-4 sm:grid-cols-3">
             {settings.dentalClinic.map((item, i) => (
-              <div key={i} className="rounded-xl border border-stone-200 bg-card p-5">
+              <div key={i} className="rounded-xl border border-stone-200 bg-white p-5">
                 <dt className="text-sm text-stone-500">{item.label}</dt>
                 <dd className="mt-1 font-medium text-stone-900 whitespace-pre-wrap">{item.value}</dd>
               </div>
@@ -152,8 +152,8 @@ export default function ProfileTabs() {
   };
 
   return (
-    <div className="min-h-screen text-stone-700">
-      <header className="sticky top-0 z-10 bg-stone-50/70 backdrop-blur border-b border-stone-200">
+    <div className="min-h-screen bg-stone-50 text-stone-700">
+      <header className="sticky top-0 z-10 bg-stone-50/90 backdrop-blur border-b border-stone-200">
         <nav className={`${width} mx-auto px-4 min-h-16 py-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1`}>
           {/* 휴대폰에서도 이름이 보이도록, 좁은 화면에서는 글자·아이콘·탭 간격을 조금 줄여 한 줄에 맞춤 */}
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
@@ -172,7 +172,7 @@ export default function ProfileTabs() {
             </Link>
             <SocialLinks />
           </div>
-          <div role="tablist" className="ml-auto flex shrink-0 sm:gap-1 p-1 rounded-full border border-stone-200 bg-card text-sm">
+          <div role="tablist" className="ml-auto flex shrink-0 sm:gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
             {(["music", "dental", "lounge"] as const).map((t) => (
               <button
                 key={t}

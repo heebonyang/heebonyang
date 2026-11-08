@@ -133,16 +133,15 @@ export function formatDate(ts: Timestamp | null) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// 이름 색: 동틀 녘 하늘에서 고른 7가지 색 중 글 번호로 무작위 선택. 새로고침해도 같은 글은 같은 색
-// (은은하지만 밝은 바탕에서 또렷하게 읽히는 진하기)
+// 이름 색: 무지개 7색(빨주노초파남보) 중 글 번호로 무작위 선택. 새로고침해도 같은 글은 같은 색
 const NAME_COLORS = [
-  "text-[#B0455F]", // 장밋빛 노을
-  "text-[#B35E2E]", // 살구빛
-  "text-[#8A6A12]", // 새벽 금빛
-  "text-[#3D7356]", // 이른 숲
-  "text-[#2F6596]", // 새벽 하늘
-  "text-[#45479A]", // 남빛
-  "text-[#7A4796]", // 보랏빛
+  "text-red-600",
+  "text-orange-500",
+  "text-yellow-600",
+  "text-green-600",
+  "text-blue-600",
+  "text-indigo-700",
+  "text-violet-600",
 ];
 
 // 색을 다시 섞고 싶으면 이 숫자만 바꾸면 됨
@@ -196,7 +195,7 @@ export default function Guestbook() {
       </div>
 
       {entries === null ? (
-        <p className="mt-6 rounded-xl border border-stone-200 bg-card p-6 text-stone-500">
+        <p className="mt-6 rounded-xl border border-stone-200 bg-white p-6 text-stone-500">
           방명록을 준비하고 있어요. 조금만 기다려 주세요.
         </p>
       ) : (
@@ -209,7 +208,7 @@ export default function Guestbook() {
               </li>
             )}
             {entries?.map((entry) => (
-              <li key={entry.id} className="rounded-2xl border border-stone-200 bg-card p-5">
+              <li key={entry.id} className="rounded-2xl border border-stone-200 bg-white p-5">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <span>
@@ -237,7 +236,7 @@ export default function Guestbook() {
             ))}
           </ul>
 
-          <form onSubmit={submit} className="mt-12 rounded-2xl border border-stone-200 bg-card p-6 grid gap-4">
+          <form onSubmit={submit} className="mt-12 rounded-2xl border border-stone-200 bg-white p-6 grid gap-4">
             <h3 className="text-lg font-bold text-stone-900">방명록 남기기</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-1.5">
@@ -293,7 +292,7 @@ export default function Guestbook() {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm hover:bg-stone-700 disabled:opacity-50"
+                className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm hover:bg-stone-700 disabled:opacity-50"
               >
                 {status === "sending" ? "남기는 중…" : "남기기"}
               </button>

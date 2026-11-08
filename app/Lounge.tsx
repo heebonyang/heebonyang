@@ -47,7 +47,7 @@ function Notices() {
             className="w-full flex items-center gap-3 py-5 text-left"
           >
             {notice.pinned && (
-              <span className="shrink-0 px-2 py-0.5 rounded-full bg-stone-900 text-stone-50 text-xs">고정</span>
+              <span className="shrink-0 px-2 py-0.5 rounded-full bg-stone-900 text-white text-xs">고정</span>
             )}
             <span className="flex-1 min-w-0 font-medium text-stone-900 truncate">{notice.title}</span>
             <span className="shrink-0 text-sm text-stone-400 tabular-nums">{formatDate(notice.createdAt)}</span>
@@ -74,14 +74,14 @@ export default function Lounge() {
           <h1 className="text-2xl font-bold text-stone-900">라운지</h1>
           <p className="text-stone-500">{settings?.loungeTagline}</p>
         </div>
-        <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-card text-sm">
+        <div role="tablist" className="flex gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
           {(Object.keys(BOARD_LABELS) as Board[]).map((b) => (
             <button
               key={b}
               role="tab"
               aria-selected={board === b}
               onClick={() => setBoard(b)}
-              className={`px-4 py-1.5 rounded-full ${board === b ? "bg-stone-900 text-stone-50" : "text-stone-500 hover:text-stone-900"}`}
+              className={`px-4 py-1.5 rounded-full ${board === b ? "bg-stone-900 text-white" : "text-stone-500 hover:text-stone-900"}`}
             >
               {BOARD_LABELS[b]}
             </button>
