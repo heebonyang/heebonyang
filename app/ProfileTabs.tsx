@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import MusicPanel from "./MusicPanel";
 import Lounge from "./Lounge";
 import RolePill from "./RolePill";
+import BridgeLights from "./BridgeLights";
 import SocialLinks from "./SocialLinks";
 import { useSiteSettings } from "./siteSettings";
 
@@ -20,9 +21,9 @@ type Tab = "music" | "dental" | "lounge";
 const TAB_LABELS: Record<Tab, string> = { music: "음악", dental: "치과", lounge: "라운지" };
 
 const THEME = {
-  music:  { eyebrow: "text-brand-red",   active: "bg-brand-red text-white" },
-  dental: { eyebrow: "text-brand-blue",  active: "bg-brand-blue text-white" },
-  lounge: { eyebrow: "text-brand-green", active: "bg-brand-green text-white" },
+  music:  { eyebrow: "text-brand-red",   active: "bg-brand-red text-stone-50" },
+  dental: { eyebrow: "text-brand-blue",  active: "bg-brand-blue text-stone-50" },
+  lounge: { eyebrow: "text-brand-green", active: "bg-brand-green text-stone-50" },
 };
 
 // tagline(머리글)은 관리자 페이지 '머리글'에서 수정
@@ -107,7 +108,7 @@ function DentalPanel() {
         <Section tab="dental" eyebrow="Clinic" title="진료 안내">
           <dl className="grid gap-4 sm:grid-cols-3">
             {settings.dentalClinic.map((item, i) => (
-              <div key={i} className="rounded-xl border border-stone-200 bg-white p-5">
+              <div key={i} className="rounded-xl border border-stone-200 bg-card p-5">
                 <dt className="text-sm text-stone-500">{item.label}</dt>
                 <dd className="mt-1 font-medium text-stone-900 whitespace-pre-wrap">{item.value}</dd>
               </div>
@@ -172,7 +173,7 @@ export default function ProfileTabs() {
             </Link>
             <SocialLinks />
           </div>
-          <div role="tablist" className="ml-auto flex shrink-0 sm:gap-1 p-1 rounded-full border border-stone-200 bg-white text-sm">
+          <div role="tablist" className="ml-auto flex shrink-0 sm:gap-1 p-1 rounded-full border border-stone-200 bg-card text-sm">
             {(["music", "dental", "lounge"] as const).map((t) => (
               <button
                 key={t}
@@ -194,7 +195,11 @@ export default function ProfileTabs() {
         {tab === "lounge" && <Lounge />}
       </main>
 
-      <footer className="py-10 text-center text-sm text-stone-400">
+      {/* 맨 아래 광안리 불빛 (0집 페이지와 같은 밤바다 분위기) */}
+      <div className="mt-10 max-w-5xl mx-auto px-4">
+        <BridgeLights />
+      </div>
+      <footer className="pt-4 pb-10 text-center text-sm text-stone-400">
         © {new Date().getFullYear()} {NAME_EN}
       </footer>
     </div>

@@ -45,7 +45,7 @@ function errorMessage(e: unknown) {
   return "저장하지 못했어요. 잠시 후 다시 시도해 주세요.";
 }
 
-const inputClass = "w-full rounded-lg border border-stone-300 bg-white px-3 py-2 focus:outline-none focus:border-stone-900";
+const inputClass = "w-full rounded-lg border border-stone-300 bg-card px-3 py-2 focus:outline-none focus:border-stone-900";
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
@@ -121,7 +121,7 @@ function ReleaseEditor({
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="grid gap-5 rounded-2xl border border-stone-200 bg-card p-6">
       <div className="flex items-center gap-4">
         <div className="w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-stone-100">
           {draft.cover && (
@@ -219,7 +219,7 @@ function ReleaseEditor({
           <button type="button" onClick={onCancel} className="px-4 py-2 rounded-full border border-stone-300 text-sm">
             취소
           </button>
-          <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+          <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50">
             {saving ? "저장 중…" : "저장"}
           </button>
         </div>
@@ -272,7 +272,7 @@ function TeamEditor({
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-card p-6">
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="팀 이름">
           <input id="team-name" required value={draft.name} onChange={(e) => set("name", e.target.value)} className={inputClass} />
@@ -345,7 +345,7 @@ function TeamEditor({
         <button type="button" onClick={onCancel} className="px-4 py-2 rounded-full border border-stone-300 text-sm">
           취소
         </button>
-        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50">
           {saving ? "저장 중…" : "저장"}
         </button>
       </div>
@@ -381,7 +381,7 @@ function NoticeEditor({
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-card p-6">
       <Field label="제목">
         <input
           id="notice-title"
@@ -415,7 +415,7 @@ function NoticeEditor({
         <button type="button" onClick={onCancel} className="px-4 py-2 rounded-full border border-stone-300 text-sm">
           취소
         </button>
-        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50">
           {saving ? "저장 중…" : "저장"}
         </button>
       </div>
@@ -452,7 +452,7 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
   };
 
   return (
-    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-card p-6">
       <p className="text-sm text-stone-500">각 탭 맨 위, 이름 옆에 보이는 한 줄 소개예요. 비워 두면 표시되지 않아요.</p>
       <Field label="음악 탭" hint="양희본 싱어송라이터 옆">
         <input
@@ -493,7 +493,7 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
       <div className="flex items-center justify-end gap-4">
         {status === "saved" && <span className="text-sm text-stone-600">저장했어요. 사이트에 바로 반영돼요.</span>}
         {status === "error" && <span className="text-sm text-red-700">{error}</span>}
-        <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+        <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50">
           {status === "saving" ? "저장 중…" : "저장"}
         </button>
       </div>
@@ -542,7 +542,7 @@ function AlbumStockEditor({ fb }: { fb: FirebaseServices }) {
   };
 
   return (
-    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-card p-6">
       <p className="text-sm text-stone-500">첫 화면과 구매 페이지의 &lsquo;남은 수량&rsquo; 게이지에 바로 반영돼요. 0이 되면 품절로 표시돼요.</p>
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="남은 수량" hint="장">
@@ -576,7 +576,7 @@ function AlbumStockEditor({ fb }: { fb: FirebaseServices }) {
         <button
           type="submit"
           disabled={!valid || status === "saving"}
-          className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50"
+          className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50"
         >
           {status === "saving" ? "저장 중…" : "저장"}
         </button>
@@ -644,7 +644,7 @@ function LinkEditor({
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-card p-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="이름" hint="예: Melon, Spotify">
           <input id="link-name" required value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={inputClass} />
@@ -696,7 +696,7 @@ function LinkEditor({
         <button type="button" onClick={onCancel} className="px-4 py-2 rounded-full border border-stone-300 text-sm">
           취소
         </button>
-        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50">
           {saving ? "저장 중…" : "저장"}
         </button>
       </div>
@@ -755,12 +755,12 @@ function LinksManager({ fb }: { fb: FirebaseServices }) {
       ) : (
         <button
           onClick={() => setEditing({ index: null, value: emptyLink() })}
-          className="w-fit px-5 py-2 rounded-full bg-stone-900 text-white text-sm"
+          className="w-fit px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm"
         >
           + 새 링크 추가
         </button>
       )}
-      <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+      <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-card">
         {links.length === 0 && <li className="p-5 text-stone-500">링크가 없어요. 음악 탭에도 표시되지 않아요.</li>}
         {links.map((link, i) => (
           <li key={i} className="flex items-center gap-4 p-4">
@@ -993,7 +993,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
 
   return (
     <div>
-      <div role="tablist" className="flex gap-1 p-1 w-fit rounded-full border border-stone-200 bg-white text-sm">
+      <div role="tablist" className="flex gap-1 p-1 w-fit rounded-full border border-stone-200 bg-card text-sm">
         {(Object.keys(SECTION_LABELS) as Section[]).map((s) => (
           <button
             key={s}
@@ -1004,7 +1004,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
               setEditing(null);
               setNotice("");
             }}
-            className={`px-4 py-1.5 rounded-full ${section === s ? "bg-stone-900 text-white" : "text-stone-500 hover:text-stone-900"}`}
+            className={`px-4 py-1.5 rounded-full ${section === s ? "bg-stone-900 text-stone-50" : "text-stone-500 hover:text-stone-900"}`}
           >
             {SECTION_LABELS[s]}
           </button>
@@ -1012,7 +1012,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
       </div>
 
       {(releases.length === 0 || notices.length === 0) && (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-white p-5">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-card p-5">
           <p className="text-sm">
             지금 사이트에 보이는 음원(Day 3, 내 남은 초록을 모두 그대에게)과 공지를 데이터베이스로 옮겨요. 처음 한 번만 하면 돼요.
           </p>
@@ -1036,12 +1036,12 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
           ) : (
             <button
               onClick={() => setEditing({ kind: "release", value: emptyRelease() })}
-              className="w-fit px-5 py-2 rounded-full bg-stone-900 text-white text-sm"
+              className="w-fit px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm"
             >
               + 새 음원 추가
             </button>
           )}
-          <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+          <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-card">
             {releases.length === 0 && <li className="p-5 text-stone-500">아직 등록된 음원이 없어요.</li>}
             {releases.map((r) => (
               <li key={r.id} className="flex items-center gap-4 p-4">
@@ -1080,12 +1080,12 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
           ) : (
             <button
               onClick={() => setEditing({ kind: "team", value: emptyTeam() })}
-              className="w-fit px-5 py-2 rounded-full bg-stone-900 text-white text-sm"
+              className="w-fit px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm"
             >
               + 새 팀 추가
             </button>
           )}
-          <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+          <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-card">
             {teams.length === 0 && <li className="p-5 text-stone-500">아직 등록된 팀이 없어요.</li>}
             {teams.map((t, i) => (
               <li key={t.id} className="flex items-center gap-4 p-4">
@@ -1138,18 +1138,18 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
           ) : (
             <button
               onClick={() => setEditing({ kind: "notice", value: emptyNotice() })}
-              className="w-fit px-5 py-2 rounded-full bg-stone-900 text-white text-sm"
+              className="w-fit px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm"
             >
               + 새 공지 작성
             </button>
           )}
-          <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+          <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-card">
             {notices.length === 0 && <li className="p-5 text-stone-500">아직 공지가 없어요.</li>}
             {notices.map((n) => (
               <li key={n.id} className="flex items-center gap-4 p-4">
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-stone-900 truncate">
-                    {n.pinned && <span className="mr-2 text-xs px-2 py-0.5 rounded-full bg-stone-900 text-white">고정</span>}
+                    {n.pinned && <span className="mr-2 text-xs px-2 py-0.5 rounded-full bg-stone-900 text-stone-50">고정</span>}
                     {n.title}
                   </p>
                   <p className="text-sm text-stone-500 tabular-nums">{formatDate(n.createdAt)}</p>
@@ -1177,7 +1177,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
       {section === "album" && <AlbumStockEditor fb={fb} />}
 
       {section === "guestbook" && (
-        <ul className="mt-8 divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+        <ul className="mt-8 divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-card">
           {guestbook.length === 0 && <li className="p-5 text-stone-500">아직 방명록 글이 없어요.</li>}
           {guestbook.map((g) => (
             <li key={g.id} className="flex gap-4 p-4">
@@ -1234,7 +1234,7 @@ export default function AdminApp() {
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-700">
-      <header className="border-b border-stone-200 bg-white">
+      <header className="border-b border-stone-200 bg-card">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <span className="font-bold text-stone-900">관리자</span>
           <div className="flex items-center gap-4 text-sm">
@@ -1261,7 +1261,7 @@ export default function AdminApp() {
           <div className="max-w-sm mx-auto mt-16 text-center">
             <h1 className="text-2xl font-bold text-stone-900">관리자 로그인</h1>
             <p className="mt-3 text-stone-500">관리자 구글 계정으로 로그인해 주세요.</p>
-            <button onClick={login} className="mt-8 px-6 py-3 rounded-full bg-stone-900 text-white">
+            <button onClick={login} className="mt-8 px-6 py-3 rounded-full bg-stone-900 text-stone-50">
               Google 계정으로 로그인
             </button>
             {loginError && <p className="mt-4 text-sm text-red-700">{loginError}</p>}
@@ -1310,7 +1310,7 @@ function DemoEditor({
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="grid gap-4 rounded-2xl border border-stone-200 bg-card p-6">
       <Field label="제목">
         <input id="demo-title" required value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className={inputClass} />
       </Field>
@@ -1326,7 +1326,7 @@ function DemoEditor({
         <button type="button" onClick={onCancel} className="px-4 py-2 rounded-full border border-stone-300 text-sm">
           취소
         </button>
-        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+        <button type="submit" disabled={saving} className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50">
           {saving ? "저장 중…" : "저장"}
         </button>
       </div>
@@ -1391,11 +1391,11 @@ function DemosManager({ fb }: { fb: FirebaseServices }) {
       {editing ? (
         <DemoEditor key={editing.id ?? "new"} fb={fb} initial={editing} onSave={save} onCancel={() => setEditing(null)} />
       ) : (
-        <button onClick={() => setEditing({ title: "", audio: "" })} className="w-fit px-5 py-2 rounded-full bg-stone-900 text-white text-sm">
+        <button onClick={() => setEditing({ title: "", audio: "" })} className="w-fit px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm">
           + 새 데모 추가
         </button>
       )}
-      <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
+      <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-card">
         {demos.length === 0 && <li className="p-5 text-stone-500">아직 올린 데모가 없어요. 데모가 없으면 음악 탭에도 보이지 않아요.</li>}
         {demos.map((d, i) => (
           <li key={d.id} className="flex items-center gap-4 p-4">
@@ -1459,7 +1459,7 @@ function BioEditor({ fb }: { fb: FirebaseServices }) {
   };
 
   return (
-    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-card p-6">
       <p className="text-sm text-stone-500">
         치과 탭 이름 바로 아래에 보이는 약력이에요. 한 줄에 하나씩 쓰고, 앞에 연도를 쓰면 왼쪽에 따로 보여요. 비워 두면 표시되지 않아요.
       </p>
@@ -1478,7 +1478,7 @@ function BioEditor({ fb }: { fb: FirebaseServices }) {
       <div className="flex items-center justify-end gap-4">
         {status === "saved" && <span className="text-sm text-stone-600">저장했어요. 사이트에 바로 반영돼요.</span>}
         {status === "error" && <span className="text-sm text-red-700">{error}</span>}
-        <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+        <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50">
           {status === "saving" ? "저장 중…" : "저장"}
         </button>
       </div>
@@ -1611,7 +1611,7 @@ function ClinicInfoEditor({ fb }: { fb: FirebaseServices }) {
   };
 
   return (
-    <form onSubmit={submit} className="mt-8 grid gap-8 rounded-2xl border border-stone-200 bg-white p-6">
+    <form onSubmit={submit} className="mt-8 grid gap-8 rounded-2xl border border-stone-200 bg-card p-6">
       <InfoListEditor
         title="진료 안내"
         hint="치과 탭에 카드로 보여요. 왼쪽 칸은 카드 위 작은 제목(예: 소속), 오른쪽 칸은 크게 보이는 내용(예: ○○치과)이에요."
@@ -1627,7 +1627,7 @@ function ClinicInfoEditor({ fb }: { fb: FirebaseServices }) {
       <div className="flex items-center justify-end gap-4">
         {status === "saved" && <span className="text-sm text-stone-600">저장했어요. 사이트에 바로 반영돼요.</span>}
         {status === "error" && <span className="text-sm text-red-700">{error}</span>}
-        <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm disabled:opacity-50">
+        <button type="submit" disabled={status === "saving"} className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm disabled:opacity-50">
           {status === "saving" ? "저장 중…" : "저장"}
         </button>
       </div>

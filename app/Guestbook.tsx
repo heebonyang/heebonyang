@@ -195,7 +195,7 @@ export default function Guestbook() {
       </div>
 
       {entries === null ? (
-        <p className="mt-6 rounded-xl border border-stone-200 bg-white p-6 text-stone-500">
+        <p className="mt-6 rounded-xl border border-stone-200 bg-card p-6 text-stone-500">
           방명록을 준비하고 있어요. 조금만 기다려 주세요.
         </p>
       ) : (
@@ -208,7 +208,7 @@ export default function Guestbook() {
               </li>
             )}
             {entries?.map((entry) => (
-              <li key={entry.id} className="rounded-2xl border border-stone-200 bg-white p-5">
+              <li key={entry.id} className="rounded-2xl border border-stone-200 bg-card p-5">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <span>
@@ -236,7 +236,7 @@ export default function Guestbook() {
             ))}
           </ul>
 
-          <form onSubmit={submit} className="mt-12 rounded-2xl border border-stone-200 bg-white p-6 grid gap-4">
+          <form onSubmit={submit} className="mt-12 rounded-2xl border border-stone-200 bg-card p-6 grid gap-4">
             <h3 className="text-lg font-bold text-stone-900">방명록 남기기</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-1.5">
@@ -292,7 +292,7 @@ export default function Guestbook() {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="px-5 py-2 rounded-full bg-stone-900 text-white text-sm hover:bg-stone-700 disabled:opacity-50"
+                className="px-5 py-2 rounded-full bg-stone-900 text-stone-50 text-sm hover:bg-stone-700 disabled:opacity-50"
               >
                 {status === "sending" ? "남기는 중…" : "남기기"}
               </button>

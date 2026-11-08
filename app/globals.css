@@ -12,3 +12,9 @@ body {
   word-break: keep-all;
   overflow-wrap: break-word;
 }
+
+/* 밤바다 테마: 페이지 바깥(스크롤 끝 여백 등)도 남색, 입력 칸·스크롤바도 어두운 모양으로 */
+html {
+  background: #0d1230;
+  color-scheme: dark;
+}

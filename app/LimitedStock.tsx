@@ -22,7 +22,7 @@ export default function LimitedStock({ size = "md", dark = false }: { size?: "sm
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <span className="inline-flex items-center gap-2">
           <span
-            className={`px-2 py-0.5 rounded text-[11px] font-semibold tracking-[0.15em] uppercase ${dark ? "bg-night-accent text-night" : "bg-stone-900 text-white"}`}
+            className={`px-2 py-0.5 rounded text-[11px] font-semibold tracking-[0.15em] uppercase ${dark ? "bg-night-accent text-night" : "bg-stone-900 text-stone-50"}`}
           >
             Limited
           </span>
