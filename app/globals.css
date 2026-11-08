@@ -13,8 +13,9 @@ body {
   overflow-wrap: break-word;
 }
 
-/* 밤바다 테마: 페이지 바깥(스크롤 끝 여백 등)도 남색, 입력 칸·스크롤바도 어두운 모양으로 */
+/* 동틀 녘 테마: 위는 옅은 새벽 푸른빛, 아래로 갈수록 살구빛 (새하얀색이 아닌 밝은 바탕) */
 html {
-  background: #0d1230;
-  color-scheme: dark;
+  min-height: 100%;
+  background: linear-gradient(to bottom, #e9edf7 0%, #f3eff5 45%, #fbf0ea 100%) #f5f2f6;
+  color-scheme: light;
 }

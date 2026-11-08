@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import MusicPanel from "./MusicPanel";
 import Lounge from "./Lounge";
 import RolePill from "./RolePill";
-import BridgeLights from "./BridgeLights";
 import SocialLinks from "./SocialLinks";
 import { useSiteSettings } from "./siteSettings";
 
@@ -153,8 +152,8 @@ export default function ProfileTabs() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-700">
-      <header className="sticky top-0 z-10 bg-stone-50/90 backdrop-blur border-b border-stone-200">
+    <div className="min-h-screen text-stone-700">
+      <header className="sticky top-0 z-10 bg-stone-50/70 backdrop-blur border-b border-stone-200">
         <nav className={`${width} mx-auto px-4 min-h-16 py-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1`}>
           {/* 휴대폰에서도 이름이 보이도록, 좁은 화면에서는 글자·아이콘·탭 간격을 조금 줄여 한 줄에 맞춤 */}
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
@@ -195,11 +194,7 @@ export default function ProfileTabs() {
         {tab === "lounge" && <Lounge />}
       </main>
 
-      {/* 맨 아래 광안리 불빛 (0집 페이지와 같은 밤바다 분위기) */}
-      <div className="mt-10 max-w-5xl mx-auto px-4">
-        <BridgeLights />
-      </div>
-      <footer className="pt-4 pb-10 text-center text-sm text-stone-400">
+      <footer className="py-10 text-center text-sm text-stone-400">
         © {new Date().getFullYear()} {NAME_EN}
       </footer>
     </div>
