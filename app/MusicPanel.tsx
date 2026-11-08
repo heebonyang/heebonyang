@@ -11,14 +11,14 @@ import { useSiteSettings, type MusicLink } from "./siteSettings";
 type Category = "solo" | "team";
 
 // 커버 이미지가 없을 때 쓰는 임시 커버 색 (발매 순서대로 돌아가며 사용)
-// 동틀 녘 하늘 색 (새벽 남보라 → 분홍·살구빛)
+// 0집 표지 파랑에서 동틀 녘 살구빛으로 넘어가는 하늘 색
 const PLACEHOLDER_TONES = [
-  "from-[#3C3F78] to-[#B98FB3]",
-  "from-[#4A3F7A] to-[#E3A28F]",
-  "from-[#2F4A7A] to-[#9DB4D8]",
-  "from-[#5A4A82] to-[#E8B4A0]",
-  "from-[#34406E] to-[#C7A3C7]",
-  "from-[#463C6E] to-[#F0B98F]",
+  "from-[#1A4A9C] to-[#8FB0E0]",
+  "from-[#163A7A] to-[#E3A28F]",
+  "from-[#24518F] to-[#B9CBEA]",
+  "from-[#1F3F7A] to-[#E8B4A0]",
+  "from-[#2A5AA8] to-[#F0C9A8]",
+  "from-[#173068] to-[#9DB4D8]",
 ];
 
 export function Cover({ release, index, large = false }: { release: Release; index: number; large?: boolean }) {
