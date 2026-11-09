@@ -11,6 +11,8 @@ export const ALBUM0 = {
   intro: "", // 앨범 소개글 (비워 두면 화면에 표시되지 않음)
   // 구매는 0집 페이지에서 (계좌이체 주문서, 주문은 관리자 페이지 '0집 주문'에서 확인)
   storeUrl: "https://heebonmd.web.app",
+  // 주문서가 바로 펼쳐지는 주소 (from=shop: 홈페이지에서 온 주문으로 표시)
+  orderUrl: "https://heebonmd.web.app/?from=shop#order",
 };
 // ────────────────────────────────────────────────────────────────
 

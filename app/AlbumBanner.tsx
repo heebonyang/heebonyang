@@ -27,7 +27,7 @@ export default function AlbumBanner() {
             {formatWon(ALBUM0.price)} · {ALBUM0.priceNote}
           </span>
           <a
-            href={ALBUM0.storeUrl}
+            href={ALBUM0.orderUrl}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center min-h-[52px] px-7 rounded-full bg-album-navy text-album-cream font-bold hover:opacity-90"
