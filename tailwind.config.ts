@@ -23,6 +23,8 @@ const config: Config = {
         },
       },
       fontFamily: {
+        // 0집 배너: 0집 판매 페이지처럼 숫자·영문까지 Noto Sans KR 로
+        kr: ["var(--font-noto-kr)", "Apple SD Gothic Neo", "sans-serif"],
         sans: ["var(--font-inter)", "var(--font-noto-kr)", "Apple SD Gothic Neo", "sans-serif"],
         serif: ["var(--font-gowun)", "serif"],
       },

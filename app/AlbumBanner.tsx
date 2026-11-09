@@ -8,7 +8,7 @@ export default function AlbumBanner() {
   const numbers = useAlbumStock();
   const soldOut = numbers !== null && numbers.stock <= 0;
   return (
-    <section className="mt-2 mb-14 grid gap-6 sm:grid-cols-[200px_1fr] sm:gap-10 items-center rounded border border-album-line bg-album-cream p-5 sm:p-8 text-album-ink">
+    <section className="mt-2 mb-14 grid gap-6 sm:grid-cols-[200px_1fr] sm:gap-10 items-center rounded border border-album-line bg-album-cream p-5 sm:p-8 font-kr text-album-ink">
       <a href={ALBUM0.storeUrl} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-sm bg-black">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={ALBUM0.cover} alt={`${ALBUM0.title} CD 표지`} className="w-full aspect-square object-cover" />
@@ -30,7 +30,7 @@ export default function AlbumBanner() {
             href={ALBUM0.storeUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center min-h-[48px] px-6 rounded-full bg-album-navy text-white font-bold hover:opacity-90"
+            className="inline-flex items-center min-h-[52px] px-7 rounded-full bg-album-navy text-album-cream font-bold hover:opacity-90"
           >
             {soldOut ? "자세히 보기" : "음반 구매하기"}
           </a>
