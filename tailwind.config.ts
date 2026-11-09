@@ -20,6 +20,7 @@ const config: Config = {
           ink: "#1A2033",
           sub: "#3D4459",
           muted: "#646A7E",
+          field: "#FFFBF5", // 입력 칸 바탕 (0집 페이지 주문서와 같음)
         },
       },
       fontFamily: {
