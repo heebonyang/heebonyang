@@ -502,7 +502,7 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
   );
 }
 
-// 0집 CD 남은 수량 / 전체 수량. 첫 화면과 구매 페이지의 게이지에 바로 반영됨
+// 0집 CD 남은 수량 / 전체 수량. 음악 탭 0집 배너의 게이지에 바로 반영됨
 function AlbumStockEditor({ fb }: { fb: FirebaseServices }) {
   const [stock, setStock] = useState<string | null>(null);
   const [total, setTotal] = useState("");
@@ -544,7 +544,7 @@ function AlbumStockEditor({ fb }: { fb: FirebaseServices }) {
 
   return (
     <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
-      <p className="text-sm text-stone-500">첫 화면과 구매 페이지의 &lsquo;남은 수량&rsquo; 게이지에 바로 반영돼요. 0이 되면 품절로 표시돼요.</p>
+      <p className="text-sm text-stone-500">음악 탭 0집 배너의 &lsquo;남은 수량&rsquo; 게이지에 바로 반영돼요. 0이 되면 품절로 표시돼요.</p>
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="남은 수량" hint="장">
           <input

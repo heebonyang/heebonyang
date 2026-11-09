@@ -2,7 +2,7 @@
 
 싱어송라이터 · 치과의사 양희본의 개인 홈페이지입니다. https://heebonyang.web.app
 
-음악 · 치과 · 라운지(공지 / 방명록)를 탭으로 나눠 소개하고, 0집 CD 구매 페이지(`/shop`)와 관리자 페이지(`/admin`)가 있습니다.
+음악 · 치과 · 라운지(공지 / 방명록)를 탭으로 나눠 소개하고, 관리자 페이지(`/admin`)가 있습니다. 0집 CD 구매는 0집 페이지(https://heebonmd.web.app)에서 하고, 예전 주소 `/shop`도 그리로 연결됩니다.
 
 ## 실행
 
@@ -42,7 +42,7 @@ npm run build   # out/ 폴더에 정적 사이트 생성 (검사도 함께 실�
 | 파일 | 내용 |
 | --- | --- |
 | `app/music.ts` 맨 위 `MUSIC_PROFILE` | 공연 · 협업 문의 이메일 |
-| `app/shop.ts` `ALBUM0` | 0집 가격, 구매 신청서 주소, 입금 계좌 |
+| `app/shop.ts` `ALBUM0` | 0집 가격, 0집 페이지 주소 |
 | `app/SocialLinks.tsx` `SOCIAL` | 상단 유튜브 · 인스타그램 주소 |
 | `public/audio`, `public/images` | 음원 파일, 앨범 표지 |
 
@@ -53,7 +53,6 @@ npm run build   # out/ 폴더에 정적 사이트 생성 (검사도 함께 실�
 | `app/ProfileTabs.tsx` | 첫 화면: 상단 바(SNS · 탭)와 음악 / 치과 / 라운지 탭 전환, 치과 탭 |
 | `app/MusicPanel.tsx` | 음악 탭: 머리글 · 로고 링크, 0집 배너, 대표곡 플레이어, 발매곡(솔로 / 팀), 문의 |
 | `app/AlbumBanner.tsx`, `app/LimitedStock.tsx` | 0집 판매 배너와 한정판 남은 수량 막대 |
-| `app/shop/ShopPage.tsx` | 0집 구매 페이지 (`/shop`) |
 | `app/Lounge.tsx`, `app/Guestbook.tsx` | 라운지: 공지와 방명록 (비밀번호로 직접 삭제, 이름 무지개색) |
 | `app/admin/AdminApp.tsx` | 관리자 페이지 (`/admin`, 구글 로그인) |
 | `app/firebase.ts` | Firebase 연결 (`/__/firebase/init.json`에서 설정을 읽음) |

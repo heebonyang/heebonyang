@@ -9,10 +9,8 @@ export const ALBUM0 = {
   stock: 369,
   total: 500, // 한정판 전체 수량
   intro: "", // 앨범 소개글 (비워 두면 화면에 표시되지 않음)
-  support: "이 CD를 구매해 주시면 다음 앨범 제작에 큰 힘이 됩니다.",
-  // 주문서: 0집 페이지의 계좌이체 주문서 (주문은 관리자 페이지 '0집 주문'에서 확인)
-  orderForm: "https://heebonmd.web.app/?from=shop#order",
-  bank: { name: "신한은행", account: "957-06-111158", holder: "양희본" },
+  // 구매는 0집 페이지에서 (계좌이체 주문서, 주문은 관리자 페이지 '0집 주문'에서 확인)
+  storeUrl: "https://heebonmd.web.app",
 };
 // ────────────────────────────────────────────────────────────────
 
