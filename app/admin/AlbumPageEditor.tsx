@@ -62,6 +62,7 @@ const GROUPS: { title: string; note?: string; fields: FieldDef[] }[] = [
   {
     title: "공연",
     fields: [
+      { path: "concert.date", label: "공연 날짜", type: "date", hint: "라이브 항로의 '상륙' 날짜로 쓰여요" },
       { path: "concert.headline", label: "제목", type: "area" },
       { path: "concert.description", label: "설명", type: "area" },
       { path: "concert.venue", label: "장소" },
