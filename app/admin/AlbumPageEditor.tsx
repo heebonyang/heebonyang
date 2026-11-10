@@ -73,11 +73,9 @@ const GROUPS: { title: string; note?: string; fields: FieldDef[] }[] = [
     ],
   },
   {
-    title: "링크 · 색",
-    note: "맨 아래에 작게 보이는 링크",
+    title: "이메일 · 색",
+    note: "이메일은 맨 아래에 작게 보여요 (비우면 숨김). 맨 위 유튜브·인스타그램은 메인 홈페이지와 같은 주소예요",
     fields: [
-      { path: "links.youtube", label: "유튜브 채널", type: "url" },
-      { path: "links.instagram", label: "인스타그램", type: "url" },
       { path: "links.email", label: "이메일", type: "email" },
       { path: "accent", label: "포인트 색", type: "color" },
     ],
