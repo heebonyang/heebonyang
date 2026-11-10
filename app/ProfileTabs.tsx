@@ -10,6 +10,7 @@ import { useSiteSettings } from "./siteSettings";
 // ── 치과 탭 내용 (음악 탭 내용은 app/music.ts) ──────────────────────
 // 음악과 치과는 서로 완전히 분리된 탭으로, 내용이 섞이지 않습니다.
 const NAME_EN = "Heebon Yang";
+const NAME_KO = "양희본";
 
 // 진료 안내·연락처는 관리자 페이지 '치과 정보'에서 고침 (기본값은 app/siteSettings.ts)
 const DENTAL = { role: "치과의사", title: "양희본" };
@@ -166,9 +167,12 @@ export default function ProfileTabs() {
                 history.replaceState(null, "", "/");
                 window.scrollTo(0, 0);
               }}
-              className="text-xs sm:text-sm font-semibold tracking-[0.1em] sm:tracking-[0.18em] uppercase text-stone-600 hover:text-stone-900 whitespace-nowrap"
+              aria-label={`${NAME_KO} ${NAME_EN}, 처음으로`}
+              className="inline-flex flex-col sm:flex-row sm:items-baseline sm:gap-2 leading-tight text-stone-600 hover:text-stone-900 whitespace-nowrap"
             >
-              {NAME_EN}
+              {/* 휴대폰: 한글 이름 아래 영어를 작게 쌓아 한 줄에 맞춤 / 넓은 화면: 나란히 */}
+              <span className="text-sm sm:text-base font-bold tracking-[0.04em]">{NAME_KO}</span>
+              <span className="text-[10px] sm:text-sm font-semibold tracking-[0.1em] sm:tracking-[0.18em] uppercase">{NAME_EN}</span>
             </Link>
             <SocialLinks />
           </div>
