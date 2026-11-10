@@ -47,6 +47,15 @@ npm run build   # out/ 폴더에 정적 사이트 생성 (검사도 함께 실�
 | `app/SocialLinks.tsx` `SOCIAL` | 상단 유튜브 · 인스타그램 주소 |
 | `public/audio`, `public/images` | 음원 파일, 앨범 표지 |
 
+## 0집 새 주문 메일 알림
+
+`tools/order-alert/`의 Google Apps Script가 5분마다 새 주문을 확인해 Gmail로 알려 줘요 (무료 요금제 그대로).
+홈페이지와 0집 페이지 주문 모두 해당하고, 주문은 스크립트를 만든 구글 계정(Firebase 프로젝트 주인)의 권한으로 읽어요.
+
+1. https://script.google.com 에서 새 프로젝트 → `Code.gs` 내용 붙여넣기
+2. 프로젝트 설정(톱니바퀴) › "편집기에서 appsscript.json 매니페스트 파일 표시" 체크 → `appsscript.json` 내용 붙여넣기
+3. 편집기에서 함수 `setup` 실행 → 권한 허용
+
 ## 파일 구성
 
 | 파일 | 역할 |
