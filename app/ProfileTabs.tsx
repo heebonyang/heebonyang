@@ -30,12 +30,10 @@ const THEME = {
 function Hero({ tab, role, title, tagline }: { tab: Tab; role: string; title: string; tagline?: string }) {
   return (
     <div className="pt-12 pb-16">
-      {/* 명함처럼 이름 옆에 탭 색 알약으로 직업 표시 (음악 탭과 같은 크기) */}
+      {/* 이름은 상단 바에 있으므로 여기서는 탭 색 알약으로 직업만 표시 (음악 탭과 같은 모양, 제목은 화면 낭독기용으로만 둠) */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-stone-900">{title}</h1>
-          <RolePill color={tab === "music" ? "amber" : "sky"}>{role}</RolePill>
-        </div>
+        <h1 className="sr-only">{title} {role}</h1>
+        <RolePill color={tab === "music" ? "amber" : "sky"}>{role}</RolePill>
         <p className="text-stone-500">{tagline}</p>
       </div>
     </div>

@@ -289,10 +289,9 @@ export default function MusicPanel() {
   return (
     <>
       <div className="pt-12 pb-10 flex flex-wrap items-center gap-x-4 gap-y-3">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-stone-900">{MUSIC_PROFILE.name}</h1>
-          <RolePill color="amber">싱어송라이터</RolePill>
-        </div>
+        {/* 이름은 상단 바에 있으므로 여기서는 직업 알약만 보여 줌 (제목은 화면 낭독기용으로만 둠) */}
+        <h1 className="sr-only">{MUSIC_PROFILE.name} 싱어송라이터</h1>
+        <RolePill color="amber">싱어송라이터</RolePill>
         <p className="text-stone-500">{settings?.musicTagline}</p>
         {settings && <MusicLinks links={settings.musicLinks} />}
       </div>

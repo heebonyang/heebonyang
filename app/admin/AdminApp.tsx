@@ -455,8 +455,8 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
 
   return (
     <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6">
-      <p className="text-sm text-stone-500">각 탭 맨 위, 이름 옆에 보이는 한 줄 소개예요. 비워 두면 표시되지 않아요.</p>
-      <Field label="음악 탭" hint="양희본 싱어송라이터 옆">
+      <p className="text-sm text-stone-500">각 탭 맨 위, 직업 표시 옆에 보이는 한 줄 소개예요. 비워 두면 표시되지 않아요.</p>
+      <Field label="음악 탭" hint="싱어송라이터 옆">
         <input
           id="heading-music"
           value={draft.musicTagline}
@@ -468,7 +468,7 @@ function HeadingsEditor({ fb }: { fb: FirebaseServices }) {
           className={inputClass}
         />
       </Field>
-      <Field label="치과 탭" hint="양희본 치과의사 옆">
+      <Field label="치과 탭" hint="치과의사 옆">
         <input
           id="heading-dental"
           value={draft.dentalTagline}
@@ -739,7 +739,7 @@ function LinksManager({ fb }: { fb: FirebaseServices }) {
   return (
     <div className="mt-8 grid gap-6">
       <p className="text-sm text-stone-500">
-        음악 탭 &lsquo;싱어송라이터 양희본&rsquo; 줄 오른쪽에 보이는 로고 링크예요. 평소엔 회색이고, 마우스를 올리면 원래 색으로 보여요.
+        음악 탭 &lsquo;싱어송라이터&rsquo; 줄 오른쪽에 보이는 로고 링크예요. 평소엔 회색이고, 마우스를 올리면 원래 색으로 보여요.
       </p>
       {notice && <p className="rounded-lg bg-stone-100 px-4 py-3 text-sm text-stone-700">{notice}</p>}
       {editing ? (
