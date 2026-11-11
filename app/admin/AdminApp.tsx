@@ -687,6 +687,11 @@ function LinkEditor({
             />
           </label>
           {draft.logo && (
+            <a href={draft.logo} download={logoFileName(draft.name, draft.logo)} className="text-sm text-stone-700 hover:underline">
+              로고 받기
+            </a>
+          )}
+          {draft.logo && (
             <button type="button" onClick={() => setDraft({ ...draft, logo: undefined })} className="text-sm text-stone-500 hover:text-red-700">
               로고 지우기
             </button>
@@ -707,6 +712,12 @@ function LinkEditor({
 }
 
 // 음악 탭 머리글 오른쪽 바로가기 관리 (멜론 등). 목록 전체를 settings/site 문서에 저장
+// 저장된 로고(data URL)를 파일로 내려받을 때 쓸 이름: "Melon-로고.png"
+function logoFileName(name: string, dataUrl: string) {
+  const ext = (dataUrl.match(/^data:image\/([a-z0-9+]+)/i)?.[1] ?? "png").replace("jpeg", "jpg").replace("svg+xml", "svg");
+  return `${(name || "logo").replace(/[\\/:*?"<>|\s]+/g, "_")}-로고.${ext}`;
+}
+
 function LinksManager({ fb }: { fb: FirebaseServices }) {
   const [links, setLinks] = useState<MusicLink[] | null>(null);
   const [editing, setEditing] = useState<{ index: number | null; value: MusicLink } | null>(null);
@@ -791,6 +802,11 @@ function LinksManager({ fb }: { fb: FirebaseServices }) {
               <p className="font-medium text-stone-900">{link.name}</p>
               <p className="text-sm text-stone-500 truncate">{link.url}</p>
             </div>
+            {link.logo && (
+              <a href={link.logo} download={logoFileName(link.name, link.logo)} className="text-sm text-stone-700 hover:underline">
+                로고 받기
+              </a>
+            )}
             <button onClick={() => setEditing({ index: i, value: link })} className="text-sm text-stone-700 hover:underline">
               수정
             </button>
