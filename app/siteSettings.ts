@@ -28,6 +28,9 @@ export type SiteSettings = {
   dentalBio: string;
   dentalClinic: InfoItem[];
   dentalContact: InfoItem[];
+  // true: 라운지 공지는 데이터베이스(관리자 페이지 '공지')에 있는 것만 보여 줌.
+  // false(처음): 데이터베이스에 공지가 없으면 app/notices.ts 의 기본 공지를 대신 보여 줌
+  noticesInDb: boolean;
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
@@ -48,6 +51,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     { label: "전화", value: "02-000-0000" },
     { label: "주소", value: "서울시 ○○구 ○○로 00" },
   ],
+  noticesInDb: false,
 };
 
 export const SETTINGS_DOC = ["settings", "site"] as const;

@@ -30,9 +30,12 @@ function Notices() {
   // 처음에는 모두 접어 두고, 눌러야 내용이 보임
   const [open, setOpen] = useState<number | null>(null);
 
+  const settings = useSiteSettings();
   useEffect(() => {
-    loadNotices().then((r) => setNotices(r.notices));
-  }, []);
+    if (!settings) return;
+    // 관리자 페이지에서 공지를 관리하기 시작한 뒤로는 데이터베이스 공지만 보여 줌 (모두 지우면 기본 공지도 안 나옴)
+    loadNotices({ showStaticWhenEmpty: !settings.noticesInDb }).then((r) => setNotices(r.notices));
+  }, [settings]);
 
   if (notices === undefined) return <p className="py-6 text-stone-400">불러오는 중…</p>;
   if (notices.length === 0) return <p className="py-6 text-stone-500">아직 공지가 없어요.</p>;

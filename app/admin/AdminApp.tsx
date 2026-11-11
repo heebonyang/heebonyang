@@ -872,13 +872,17 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
   >(null);
   const [notice, setNotice] = useState("");
   const [loadError, setLoadError] = useState(false);
+  // false 면 아직 공지를 관리자 페이지로 옮기기 전 (사이트에 기본 공지가 보이는 중)
+  const [noticesInDb, setNoticesInDb] = useState(true);
 
   const reload = useCallback(async () => {
-    const [music, entries, noticeList] = await Promise.all([
+    const [music, entries, noticeList, settings] = await Promise.all([
       loadMusic({ showStaticWhenEmpty: false }),
       loadGuestbook(),
       loadNotices({ showStaticWhenEmpty: false }),
+      loadSettings({ fresh: true }),
     ]);
+    setNoticesInDb(settings.noticesInDb);
     setLoadError(!music.remote);
     if (music.remote) {
       setReleases(music.releases);
@@ -947,7 +951,11 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
     }
   };
 
+  // 공지를 한 번이라도 저장하면, 사이트는 그 뒤로 데이터베이스 공지만 보여 줌 (기본 공지가 다시 나타나지 않게)
+  const markNoticesInDb = () => setDoc(doc(fb.db, ...SETTINGS_DOC), { noticesInDb: true }, { merge: true });
+
   const saveNotice = async (n: Notice) => {
+    await markNoticesInDb();
     const data = { title: n.title, body: n.body, pinned: n.pinned };
     // 작성일은 처음 저장할 때만 기록하고, 수정할 때는 그대로 둠
     if (n.id) await setDoc(doc(fb.db, "notices", n.id), data, { merge: true });
@@ -965,6 +973,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
         }
       }
       if (notices.length === 0) {
+        await markNoticesInDb();
         for (const n of STATIC_NOTICES) {
           await addDoc(collection(fb.db, "notices"), {
             title: n.title,
@@ -1029,7 +1038,7 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
         ))}
       </div>
 
-      {(releases.length === 0 || notices.length === 0) && (
+      {(releases.length === 0 || (notices.length === 0 && !noticesInDb)) && (
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-white p-5">
           <p className="text-sm">
             지금 사이트에 보이는 음원(Day 3, 내 남은 초록을 모두 그대에게)과 공지를 데이터베이스로 옮겨요. 처음 한 번만 하면 돼요.
@@ -1162,7 +1171,22 @@ function Dashboard({ fb }: { fb: FirebaseServices }) {
             </button>
           )}
           <ul className="divide-y divide-stone-200 rounded-2xl border border-stone-200 bg-white">
-            {notices.length === 0 && <li className="p-5 text-stone-500">아직 공지가 없어요.</li>}
+            {notices.length === 0 && noticesInDb && <li className="p-5 text-stone-500">아직 공지가 없어요.</li>}
+            {notices.length === 0 && !noticesInDb && (
+              <li className="grid gap-3 p-5">
+                <p className="text-sm text-stone-600">
+                  데이터베이스에 공지가 없어서, 지금 라운지에는 사이트에 기본으로 들어 있는 아래 공지가 보이고 있어요. 가져오면 여기서 수정·삭제할 수 있어요.
+                </p>
+                <ul className="list-disc pl-5 text-sm text-stone-900">
+                  {STATIC_NOTICES.map((n) => (
+                    <li key={n.title}>{n.title}</li>
+                  ))}
+                </ul>
+                <span className="w-fit">
+                  <ConfirmButton label="이 공지 가져와서 수정하기" onConfirm={importStatic} />
+                </span>
+              </li>
+            )}
             {notices.map((n) => (
               <li key={n.id} className="flex items-center gap-4 p-4">
                 <div className="min-w-0 flex-1">
