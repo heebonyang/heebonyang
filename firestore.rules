@@ -76,6 +76,56 @@ service cloud.firestore {
         && request.resource.data.agree == true;
     }
 
+    // 공연 좌석 예매 (계좌이체). 0집 페이지(heebonmd.web.app) 예매서에서 Firestore REST로 저장됨.
+    // 예매(tickets/{예매번호})와 고른 좌석(concertSeats/{좌석})을 한 번에 만들어야 하고, 좌석 문서는 한 번만 만들 수 있어서
+    // 같은 좌석을 두 사람이 잡을 수 없음. 예매는 관리자 '0집 페이지' › 공연 › '예매 받기'가 켜져 있을 때만 가능.
+    function seatClaimed(ticketId, seat) {
+      return seat is string
+        && seat.matches("^[A-T]([1-9]|1[0-9]|20)$")
+        && getAfter(/databases/$(database)/documents/concertSeats/$(seat)).data.ticket == ticketId;
+    }
+
+    match /tickets/{id} {
+      allow read, update, delete: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(["name", "phone", "seats", "qty", "depositor", "memo", "status", "createdAt", "agree"])
+        && request.resource.data.keys().hasAll(["name", "phone", "seats", "qty", "depositor", "memo", "status", "createdAt", "agree"])
+        && id.matches("^T[0-9]{6}-[A-Z0-9]{5}$")
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 30
+        && request.resource.data.phone is string
+        && request.resource.data.phone.matches("^[0-9][0-9-]{8,13}$")
+        && request.resource.data.seats is list
+        && request.resource.data.seats.size() >= 1
+        && request.resource.data.seats.size() <= 4
+        && request.resource.data.seats.toSet().size() == request.resource.data.seats.size()
+        && request.resource.data.qty == request.resource.data.seats.size()
+        && seatClaimed(id, request.resource.data.seats[0])
+        && (request.resource.data.seats.size() < 2 || seatClaimed(id, request.resource.data.seats[1]))
+        && (request.resource.data.seats.size() < 3 || seatClaimed(id, request.resource.data.seats[2]))
+        && (request.resource.data.seats.size() < 4 || seatClaimed(id, request.resource.data.seats[3]))
+        && request.resource.data.depositor is string
+        && request.resource.data.depositor.size() > 0
+        && request.resource.data.depositor.size() <= 30
+        && request.resource.data.memo is string
+        && request.resource.data.memo.size() <= 300
+        && request.resource.data.status == "new"
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.agree == true
+        && get(/databases/$(database)/documents/settings/albumPage).data.concert.ticketOpen == true;
+    }
+
+    // 예매된 좌석 목록: 누구나 읽을 수 있음(배치도의 분홍 좌석). 내용은 예매번호뿐.
+    // 새 예매와 같은 요청에서만 만들 수 있고, 지우기(예매 취소로 좌석 풀기)는 관리자만.
+    match /concertSeats/{seat} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(["ticket"])
+        && request.resource.data.ticket is string
+        && seat in getAfter(/databases/$(database)/documents/tickets/$(request.resource.data.ticket)).data.seats
+        && getAfter(/databases/$(database)/documents/tickets/$(request.resource.data.ticket)).data.createdAt == request.time;
+      allow delete: if isAdmin();
+    }
+
     // 방명록: 누구나 이름·비밀번호를 정해 글을 남기고, 같은 비밀번호로 자기 글을 지울 수 있음.
     // 비밀번호는 브라우저에서 해시로 바꾼 값만 guestbookKeys에 저장하고, 이 컬렉션은 아무도 읽을 수 없음.
     match /guestbook/{id} {

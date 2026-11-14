@@ -9,8 +9,9 @@ import type { FirebaseServices } from "../firebase";
 const MD_SITE = "https://heebonmd.web.app";
 const DOC = ["settings", "albumPage"] as const;
 
-type Content = Record<string, Record<string, string | number> | string | number>;
-type FieldType = "text" | "area" | "number" | "date" | "url" | "email" | "color" | "cover";
+type Value = string | number | boolean;
+type Content = Record<string, Record<string, Value> | Value>;
+type FieldType = "text" | "area" | "number" | "date" | "url" | "email" | "color" | "cover" | "toggle";
 type FieldDef = { path: string; label: string; type?: FieldType; hint?: string };
 
 const GROUPS: { title: string; note?: string; fields: FieldDef[] }[] = [
@@ -69,7 +70,14 @@ const GROUPS: { title: string; note?: string; fields: FieldDef[] }[] = [
       { path: "concert.time", label: "시간" },
       { path: "concert.ticket", label: "티켓" },
       { path: "concert.ticketButton", label: "버튼 글자" },
-      { path: "concert.ticketUrl", label: "예매 링크", type: "url", hint: "비우면 버튼이 흐리게 보여요" },
+      {
+        path: "concert.ticketOpen",
+        label: "예매 받기",
+        type: "toggle",
+        hint: "켜면 0집 페이지에서 좌석을 골라 예매할 수 있어요. 예매 목록은 '공연 예매'에서 확인해요.",
+      },
+      { path: "concert.ticketPrice", label: "1석 가격", type: "number", hint: "원 · 입금 금액 계산에 쓰여요" },
+      { path: "concert.ticketUrl", label: "외부 예매 링크", type: "url", hint: "예매 받기가 꺼져 있을 때만 쓰여요. 비우면 버튼이 흐리게 보여요" },
       { path: "concert.seatRows", label: "좌석 배치도 · 줄 수", type: "number", hint: "A, B, C… 최대 20줄" },
       { path: "concert.seatsPerRow", label: "좌석 배치도 · 한 줄 좌석 수", type: "number", hint: "가운데 통로로 반씩 나뉘어요" },
       { path: "concert.bookedSeats", label: "예매된 좌석", type: "area", hint: "예: A6, A7, B10 — 적은 좌석이 분홍으로 보여요" },
@@ -86,20 +94,19 @@ const GROUPS: { title: string; note?: string; fields: FieldDef[] }[] = [
   },
 ];
 
-function getPath(o: Content, path: string): string | number | undefined {
+function getPath(o: Content, path: string): Value | undefined {
   return path.split(".").reduce<unknown>((a, k) => (a && typeof a === "object" ? (a as Record<string, unknown>)[k] : undefined), o) as
-    | string
-    | number
+    | Value
     | undefined;
 }
 
-function setPath(o: Content, path: string, value: string | number): Content {
+function setPath(o: Content, path: string, value: Value): Content {
   const copy: Content = JSON.parse(JSON.stringify(o));
   const keys = path.split(".");
   if (keys.length === 1) {
     copy[keys[0]] = value;
   } else {
-    const group = (copy[keys[0]] && typeof copy[keys[0]] === "object" ? copy[keys[0]] : {}) as Record<string, string | number>;
+    const group = (copy[keys[0]] && typeof copy[keys[0]] === "object" ? copy[keys[0]] : {}) as Record<string, Value>;
     group[keys[1]] = value;
     copy[keys[0]] = group;
   }
@@ -158,7 +165,7 @@ export default function AlbumPageEditor({ fb }: { fb: FirebaseServices }) {
   if (loadError) return <p className="mt-8 text-red-700">{loadError}</p>;
   if (!draft) return <p className="mt-8 text-stone-400">불러오는 중…</p>;
 
-  const change = (path: string, value: string | number) => {
+  const change = (path: string, value: Value) => {
     setDraft(setPath(draft, path, value));
     setStatus("idle");
   };
@@ -190,6 +197,17 @@ export default function AlbumPageEditor({ fb }: { fb: FirebaseServices }) {
         {f.hint && <span className="ml-2 text-stone-400">{f.hint}</span>}
       </label>
     );
+    if (f.type === "toggle") {
+      return (
+        <label key={f.path} htmlFor={id} className="flex items-start gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4 cursor-pointer">
+          <input id={id} type="checkbox" checked={raw === true} onChange={(e) => change(f.path, e.target.checked)} className="mt-1 h-5 w-5 accent-stone-900" />
+          <span className="grid gap-0.5">
+            <span className="font-medium text-stone-900">{f.label}</span>
+            {f.hint && <span className="text-sm text-stone-500">{f.hint}</span>}
+          </span>
+        </label>
+      );
+    }
     if (f.type === "cover") {
       return (
         <div key={f.path} className="grid gap-1.5">
