@@ -70,6 +70,10 @@ const GROUPS: { title: string; note?: string; fields: FieldDef[] }[] = [
       { path: "concert.ticket", label: "티켓" },
       { path: "concert.ticketButton", label: "버튼 글자" },
       { path: "concert.ticketUrl", label: "예매 링크", type: "url", hint: "비우면 버튼이 흐리게 보여요" },
+      { path: "concert.seatRows", label: "좌석 배치도 · 줄 수", type: "number", hint: "A, B, C… 최대 20줄" },
+      { path: "concert.seatsPerRow", label: "좌석 배치도 · 한 줄 좌석 수", type: "number", hint: "가운데 통로로 반씩 나뉘어요" },
+      { path: "concert.bookedSeats", label: "예매된 좌석", type: "area", hint: "예: A6, A7, B10 — 적은 좌석이 분홍으로 보여요" },
+      { path: "concert.seatNote", label: "배치도 아래 안내", hint: "비우면 숨김" },
     ],
   },
   {
